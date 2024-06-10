@@ -156,7 +156,7 @@ luckyWheelView.rotateWheel()
 <!-- EXAMPLES -->
 ## Examples
 
-<a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%201.png" width="200"></a>  <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%202.png" width="200"></a>  <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%203.png" width="200"></a>
+<a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%201.png" width="200"></a>  <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%202.png" width="200"></a>  <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%203.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%204.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%205.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%206.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%207.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%208.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%209.png" width="200"></a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
