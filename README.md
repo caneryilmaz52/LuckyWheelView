@@ -9,6 +9,9 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
+[![JitPack Version][jitpack-version-shield]][linkedin-url]
+[![JitPack Download Week][jitpack-download-week-shield]][linkedin-url]
+[![JitPack Download Month][jitpack-download-month-shield]][linkedin-url]
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -82,8 +85,6 @@ dependencyResolutionManagement {
 
 <!-- USAGE -->
 ## Usage
-
-Use this space to show useful examples of how a project can be used. Can find additional screenshots, code examples in this space.
 
 ```xml
 <com.caneryilmaz.apps.luckywheel.ui.LuckyWheelView
@@ -280,6 +281,7 @@ Get the perfect look with customization combinations.
 <!-- ROADMAP -->
 ## Roadmap
 
+- [ ] Attributes development
 - [ ] Arrow animation slowdown development
 - [ ] Any won effect (vibrate, confetti etc) when wheel stop
 - [ ] Light effect like carnival zone
@@ -346,3 +348,7 @@ Distributed under the [Apache 2.0 License](LICENSE). See `LICENSE.txt` for more 
 [license-url]: https://github.com/caneryilmaz52/LuckyWheelView/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/caneryilmaz52
+[jitpack-url]: https://jitpack.io/#caneryilmaz52/LuckyWheelView
+[jitpack-version-shield]: https://jitpack.io/v/caneryilmaz52/LuckyWheelView.svg
+[jitpack-download-week-shield]: https://jitpack.io/v/caneryilmaz52/LuckyWheelView/week.svg
+[jitpack-download-month-shield]: https://jitpack.io/v/caneryilmaz52/LuckyWheelView/month.svg
