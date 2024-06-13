@@ -2,8 +2,11 @@ package com.caneryilmaz.apps.luckywheel.ui
 
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -12,15 +15,17 @@ import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
-import com.caneryilmaz.apps.luckywheel.constant.ArrowPosition
 import com.caneryilmaz.apps.luckywheel.R
+import com.caneryilmaz.apps.luckywheel.constant.ArrowPosition
+import com.caneryilmaz.apps.luckywheel.constant.RotationSpeed
 import com.caneryilmaz.apps.luckywheel.constant.RotationStatus
+import com.caneryilmaz.apps.luckywheel.constant.TextOrientation
 import com.caneryilmaz.apps.luckywheel.data.WheelData
 import com.caneryilmaz.apps.luckywheel.listener.RotationStatusListener
 import com.caneryilmaz.apps.luckywheel.listener.TargetReachListener
 import com.caneryilmaz.apps.luckywheel.listener.WheelViewListener
-import com.caneryilmaz.apps.luckywheel.utils.AttrsHelper
 import kotlin.math.abs
+
 
 class LuckyWheelView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -75,9 +80,219 @@ class LuckyWheelView @JvmOverloads constructor(
     private fun setAttrsField(attrs: AttributeSet?) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.LuckyWheelView)
 
-        val attrsHelper = AttrsHelper(typedArray)
+        typedArray.getColor(R.styleable.LuckyWheelView_rootLayoutBackgroundColor, Color.TRANSPARENT).let { color ->
+            setRootLayoutBackgroundColor(rootLayoutColor = color)
+        }
 
-        attrsHelper.clear()
+        typedArray.getDrawable(R.styleable.LuckyWheelView_rootLayoutBackgroundDrawable)?.let { drawable ->
+            setRootLayoutBackgroundDrawable(rootLayoutDrawable = drawable)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_rootLayoutPadding, 5.getDpValue()).let { rootPadding ->
+
+            val rootLayoutPaddingLeft = typedArray.getDimension(R.styleable.LuckyWheelView_rootLayoutPaddingLeft, rootPadding).let { rootPaddingLeft ->
+                if (rootPaddingLeft != rootPadding) {
+                    rootPaddingLeft
+                } else {
+                    rootPadding
+                }
+            }
+            val rootLayoutPaddingRight = typedArray.getDimension(R.styleable.LuckyWheelView_rootLayoutPaddingRight, rootPadding).let { rootPaddingRight ->
+                if (rootPaddingRight != rootPadding) {
+                    rootPaddingRight
+                } else {
+                    rootPadding
+                }
+            }
+            val rootLayoutPaddingTop = typedArray.getDimension(R.styleable.LuckyWheelView_rootLayoutPaddingTop, rootPadding).let { rootPaddingTop ->
+                if (rootPaddingTop != rootPadding) {
+                    rootPaddingTop
+                } else {
+                    rootPadding
+                }
+            }
+            val rootLayoutPaddingBottom = typedArray.getDimension(R.styleable.LuckyWheelView_rootLayoutPaddingBottom, rootPadding).let { rootPaddingBottom ->
+                if (rootPaddingBottom != rootPadding) {
+                    rootPaddingBottom
+                } else {
+                    rootPadding
+                }
+            }
+
+            setRootLayoutPadding(
+                left = rootLayoutPaddingLeft,
+                top = rootLayoutPaddingTop,
+                right = rootLayoutPaddingRight,
+                bottom = rootLayoutPaddingBottom
+            )
+        }
+
+        typedArray.getInt(R.styleable.LuckyWheelView_arrowPosition, 1).let { arrowPosition ->
+            setArrowPosition(arrowPosition = arrowPosition)
+        }
+
+        typedArray.getResourceId(R.styleable.LuckyWheelView_arrowAnimation, R.anim.shake).let { arrowAnimation ->
+            setArrowAnimation(animationResourceId = arrowAnimation)
+        }
+
+        typedArray.getBoolean(R.styleable.LuckyWheelView_arrowAnimationEnable, true).let { arrowAnimationEnable ->
+            setArrowAnimationStatus(arrowAnimStatus = arrowAnimationEnable)
+        }
+
+        typedArray.getDrawable(R.styleable.LuckyWheelView_wheelTopArrow)?.let { drawable ->
+            setWheelTopArrow(wheelArrowDrawable = drawable)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_wheelTopArrowWidth, 48.getDpValue()).let { arrowWidth ->
+            setWheelTopArrowWidth(width = arrowWidth)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_wheelTopArrowHeight, 48.getDpValue()).let { arrowHeight ->
+            setWheelTopArrowHeight(height = arrowHeight)
+        }
+
+        typedArray.getColor(R.styleable.LuckyWheelView_wheelTopArrowColor, Color.TRANSPARENT).let { color ->
+            setWheelTopArrowColor(wheelTopArrowColor = color)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_wheelTopArrowMargin, 0.getDpValue()).let { margin ->
+            setWheelTopArrowMarginBottom(margin = margin)
+        }
+
+
+        typedArray.getDrawable(R.styleable.LuckyWheelView_wheelCenterArrow)?.let { drawable ->
+            setWheelCenterArrow(wheelArrowDrawable = drawable)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_wheelCenterArrowWidth, 30.getDpValue()).let { arrowWidth ->
+            setWheelCenterArrowWidth(width = arrowWidth)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_wheelCenterArrowHeight, 30.getDpValue()).let { arrowHeight ->
+            setWheelCenterArrowHeight(height = arrowHeight)
+        }
+
+        typedArray.getColor(R.styleable.LuckyWheelView_wheelCenterArrowColor, Color.TRANSPARENT).let { color ->
+            setWheelCenterArrowColor(wheelCenterArrowColor = color)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_wheelCenterArrowMarginTop, 0F).let { marginTop ->
+            setWheelCenterArrowMarginTop(marginTop = marginTop)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_wheelCenterArrowMarginBottom, 0F).let { marginBottom ->
+            setWheelCenterArrowMarginBottom(marginBottom = marginBottom)
+        }
+
+        typedArray.getString(R.styleable.LuckyWheelView_wheelCenterText)?.let { centertText ->
+            setWheelCenterText(wheelCenterText = centertText)
+        }
+
+        typedArray.getColor(R.styleable.LuckyWheelView_wheelCenterTextColor, Color.BLACK).let { color ->
+            setWheelCenterTextColor(wheelCenterTextColor = color)
+        }
+
+        typedArray.getDimensionPixelSize(R.styleable.LuckyWheelView_wheelCenterTextSize, 16).let { textSize ->
+            if (textSize == 16) {
+                setWheelCenterTextSize(wheelCenterTextSize = 16)
+            } else {
+                setWheelCenterTextSize(wheelCenterTextSize = textSize.toFloat())
+            }
+        }
+
+        typedArray.getFont(R.styleable.LuckyWheelView_wheelCenterTextFont)?.let { font ->
+            setWheelCenterTextFont(typeface = font)
+        }
+
+        typedArray.getBoolean(R.styleable.LuckyWheelView_rotationViaSwipe, false).let { rotationViaSwipeEnable ->
+            setRotationViaSwipe(rotationViaSwipe = rotationViaSwipeEnable)
+        }
+
+        typedArray.getInt(R.styleable.LuckyWheelView_swipeDistance, 100).let { swipeDistance ->
+            setSwipeDistance(swipeDistance = swipeDistance)
+        }
+
+        typedArray.getBoolean(R.styleable.LuckyWheelView_stopCenterOfItem, false).let { stopCenterOfItemEnable ->
+            stopCenterOfItem(stopCenterOfItem = stopCenterOfItemEnable)
+        }
+
+        typedArray.getInt(R.styleable.LuckyWheelView_rotateTime, 5000).let { rotateTime ->
+            setRotateTime(rotateTime = rotateTime.toLong())
+        }
+
+        typedArray.getInt(R.styleable.LuckyWheelView_rotateSpeed, RotationSpeed.NORMAL).let { rotateSpeed ->
+            setRotateSpeed(rotateSpeed = rotateSpeed)
+        }
+
+        typedArray.getFloat(R.styleable.LuckyWheelView_rotateSpeedMultiplier, 1F).let { rotateSpeedMultiplier ->
+            setRotateSpeedMultiplier(rotateSpeedMultiplier = rotateSpeedMultiplier)
+        }
+
+        typedArray.getColor(R.styleable.LuckyWheelView_wheelColor, Color.WHITE).let { wheelColor ->
+            setWheelColor(wheelColor = wheelColor)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_wheelPadding, 2F).let { wheelPadding ->
+            setWheelPadding(padding = wheelPadding)
+        }
+
+        typedArray.getBoolean(R.styleable.LuckyWheelView_drawItemSeparator, false).let { drawItemSeparator ->
+            drawItemSeparator(drawItemSeparator = drawItemSeparator)
+        }
+
+        typedArray.getColor(R.styleable.LuckyWheelView_wheelItemSeparatorColor, Color.BLACK).let { wheelItemSeparatorColor ->
+            setWheelItemSeparatorColor(wheelItemSeparatorColor = wheelItemSeparatorColor)
+        }
+
+        typedArray.getFloat(R.styleable.LuckyWheelView_itemSeparatorThickness, 1F).let { itemSeparatorThickness ->
+            setItemSeparatorThickness(itemSeparatorThickness = itemSeparatorThickness)
+        }
+
+        typedArray.getBoolean(R.styleable.LuckyWheelView_drawCenterPoint, false).let { drawCenterPoint ->
+            drawCenterPoint(drawCenterPoint = drawCenterPoint)
+        }
+
+        typedArray.getColor(R.styleable.LuckyWheelView_centerPointColor, Color.WHITE).let { centerPointColor ->
+            setCenterPointColor(centerPointColor = centerPointColor)
+        }
+
+        typedArray.getFloat(R.styleable.LuckyWheelView_centerPointRadius, 30F).let { centerPointRadius ->
+            setCenterPointRadius(centerPointRadius = centerPointRadius)
+        }
+
+        typedArray.getInt(R.styleable.LuckyWheelView_textOrientation, TextOrientation.HORIZONTAL).let { textOrientation ->
+            setTextOrientation(textOrientation = textOrientation)
+        }
+
+        typedArray.getInt(R.styleable.LuckyWheelView_textPadding, 20).let { textPadding ->
+            setTextPadding(textPadding = textPadding)
+        }
+
+        typedArray.getInt(R.styleable.LuckyWheelView_textSize, 16).let { textSize ->
+            setTextSize(textSize = textSize)
+        }
+
+        typedArray.getFloat(R.styleable.LuckyWheelView_letterSpacing, 0.1F).let { letterSpacing ->
+            setTextLetterSpacing(letterSpacing = letterSpacing)
+        }
+
+        typedArray.getFont(R.styleable.LuckyWheelView_textFont)?.let { font ->
+            setTextFont(typeface = font)
+        }
+
+        typedArray.recycle()
+    }
+
+    fun Int.getDpValue(): Float {
+        return (this * Resources.getSystem().displayMetrics.density + 0.5f)
+    }
+
+    fun Float.getDpValue(): Int {
+        return (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+    }
+
+    fun Float.getDpValueFloat(): Float {
+        return (this * Resources.getSystem().displayMetrics.density + 0.5f)
     }
 
 
@@ -90,7 +305,7 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
-     * this function set root layout drawable
+     * this functions set root layout drawable
      * default is null
      */
     fun setRootLayoutBackgroundDrawable(rootLayoutDrawableId: Int) {
@@ -98,11 +313,19 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
+     * this functions set root layout drawable
+     * default is null
+     */
+    fun setRootLayoutBackgroundDrawable(rootLayoutDrawable: Drawable) {
+        rootLayout.background = rootLayoutDrawable
+    }
+
+    /**
      * this function set root layout padding
      * also if this function don't call then root layout padding be 5dp(default)
      */
-    fun setRootLayoutPadding(padding: Int) {
-        val paddingDp = (padding * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+    fun setRootLayoutPadding(padding: Float) {
+        val paddingDp = padding.getDpValue()
         rootLayout.setPadding(paddingDp, paddingDp, paddingDp, paddingDp)
     }
 
@@ -110,11 +333,11 @@ class LuckyWheelView @JvmOverloads constructor(
      * this function set root layout padding
      * also if this function don't call then root layout padding be 5dp(default)
      */
-    fun setRootLayoutPadding(left: Int, top: Int, right: Int, bottom: Int) {
-        val paddingLeft = (left * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-        val paddingTop = (top * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-        val paddingRight = (right * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-        val paddingBottom = (bottom * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+    fun setRootLayoutPadding(left: Float, top: Float, right: Float, bottom: Float) {
+        val paddingLeft = left.getDpValue()
+        val paddingTop = top.getDpValue()
+        val paddingRight = right.getDpValue()
+        val paddingBottom = bottom.getDpValue()
 
         rootLayout.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom)
     }
@@ -161,7 +384,7 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
 
-    fun setWheelTopArrow(wheelArrowId: Int, width: Int, height: Int, wheelTopArrowColor: Int, margin: Int) {
+    fun setWheelTopArrow(wheelArrowId: Int, width: Float, height: Float, wheelTopArrowColor: Int, margin: Float) {
         setWheelTopArrow(wheelArrowId = wheelArrowId)
         setWheelTopArrowSize(width = width, height = height)
         setWheelTopArrowColor(wheelTopArrowColor = wheelTopArrowColor)
@@ -176,14 +399,32 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
+     * this function set wheel top arrow drawable
+     */
+    fun setWheelTopArrow(wheelArrowDrawable: Drawable) {
+        wheelTopArrow.setImageDrawable(wheelArrowDrawable)
+    }
+
+    /**
      * this function set wheel top arrow size with DP value
      */
-    fun setWheelTopArrowSize(width: Int, height: Int) {
-        val widthDp = (width * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-        wheelTopArrow.layoutParams.width = widthDp
+    fun setWheelTopArrowSize(width: Float, height: Float) {
+        setWheelTopArrowWidth(width.getDpValueFloat())
+        setWheelTopArrowHeight(height.getDpValueFloat())
+    }
 
-        val heightDp = (height * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-        wheelTopArrow.layoutParams.height = heightDp
+    /**
+     * this function set wheel top arrow width with DP value
+     */
+    private fun setWheelTopArrowWidth(width: Float) {
+        wheelTopArrow.layoutParams.width = width.toInt()
+    }
+
+    /**
+     * this function set wheel top arrow height with DP value
+     */
+    private fun setWheelTopArrowHeight(height: Float) {
+        wheelTopArrow.layoutParams.height = height.toInt()
     }
 
     /**
@@ -197,15 +438,25 @@ class LuckyWheelView @JvmOverloads constructor(
      * this function set wheel top arrow margin
      * also if this function don't call then wheel top arrow margin be 0dp(default)
      */
-    fun setWheelTopArrowMargin(margin: Int) {
-        val marginDp = (margin * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+    fun setWheelTopArrowMargin(margin: Float) {
+        val marginDp = margin.getDpValue()
 
         val params: MarginLayoutParams = wheelTopArrow.layoutParams as MarginLayoutParams
         params.bottomMargin = -marginDp
     }
 
+    /**
+     * this function set wheel top arrow margin
+     * also if this function don't call then wheel top arrow margin be 0dp(default)
+     * this function for attrs calling
+     */
+    private fun setWheelTopArrowMarginBottom(margin: Float) {
+        val params: MarginLayoutParams = wheelTopArrow.layoutParams as MarginLayoutParams
+        params.bottomMargin = -margin.toInt()
+    }
 
-    fun setWheelCenterArrow(wheelArrowId: Int, width: Int, height: Int, wheelCenterArrowColor: Int, marginTop: Int, marginBottom: Int) {
+
+    fun setWheelCenterArrow(wheelArrowId: Int, width: Float, height: Float, wheelCenterArrowColor: Int, marginTop: Float, marginBottom: Float) {
         setWheelCenterArrow(wheelArrowId = wheelArrowId)
         setWheelCenterArrowSize(width = width, height = height)
         setWheelCenterArrowColor(wheelCenterArrowColor = wheelCenterArrowColor)
@@ -220,14 +471,32 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
+     * this function set wheel center arrow drawable
+     */
+    fun setWheelCenterArrow(wheelArrowDrawable: Drawable) {
+        wheelCenterArrow.setImageDrawable(wheelArrowDrawable)
+    }
+
+    /**
      * this function set wheel center arrow size with DP value
      */
-    fun setWheelCenterArrowSize(width: Int, height: Int) {
-        val widthDp = (width * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-        wheelCenterArrow.layoutParams.width = widthDp
+    fun setWheelCenterArrowSize(width: Float, height: Float) {
+        setWheelCenterArrowWidth(width.getDpValueFloat())
+        setWheelCenterArrowHeight(height.getDpValueFloat())
+    }
 
-        val heightDp = (height * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-        wheelCenterArrow.layoutParams.height = heightDp
+    /**
+     * this function set wheel center arrow width with DP value
+     */
+    private fun setWheelCenterArrowWidth(width: Float) {
+        wheelCenterArrow.layoutParams.width = width.toInt()
+    }
+
+    /**
+     * this function set wheel center arrow height with DP value
+     */
+    private fun setWheelCenterArrowHeight(height: Float) {
+        wheelCenterArrow.layoutParams.height = height.toInt()
     }
 
     /**
@@ -241,15 +510,36 @@ class LuckyWheelView @JvmOverloads constructor(
      * this function set wheel center arrow margin
      * also if this function don't call then wheel center arrow margin be 0dp(default)
      */
-    fun setWheelCenterArrowMargin(marginTop: Int, marginBottom: Int) {
-        val marginTopDp = (marginTop * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
-        val marginBottomDp = (marginBottom * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+    fun setWheelCenterArrowMargin(marginTop: Float, marginBottom: Float) {
+        val marginTopDp = marginTop.getDpValue()
+        val marginBottomDp = marginBottom.getDpValue()
 
         val params: MarginLayoutParams = wheelCenterArrow.layoutParams as MarginLayoutParams
         params.bottomMargin = marginBottomDp
         params.topMargin = marginTopDp
     }
 
+    /**
+     * this function set wheel center arrow top margin
+     * also if this function don't call then wheel center arrow top margin be 0dp(default)
+     */
+    private fun setWheelCenterArrowMarginTop(marginTop: Float) {
+        val marginTopDp = marginTop.getDpValue()
+
+        val params: MarginLayoutParams = wheelCenterArrow.layoutParams as MarginLayoutParams
+        params.topMargin = marginTopDp
+    }
+
+    /**
+     * this function set wheel center arrow bottom margin
+     * also if this function don't call then wheel center arrow bottom margin be 0dp(default)
+     */
+    private fun setWheelCenterArrowMarginBottom(marginBottom: Float) {
+        val marginBottomDp = marginBottom.getDpValue()
+
+        val params: MarginLayoutParams = wheelCenterArrow.layoutParams as MarginLayoutParams
+        params.bottomMargin = marginBottomDp
+    }
 
     fun setWheelCenterText(wheelCenterText: String, wheelCenterTextColor: Int, wheelCenterTextSize: Int, fontResourceId: Int) {
         setWheelCenterText(wheelCenterText = wheelCenterText)
@@ -290,6 +580,14 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
+     * this function set wheel center text size with SP value
+     * also if this function don't call then text size be 16sp(default)
+     */
+    private fun setWheelCenterTextSize(wheelCenterTextSize: Float) {
+        wheelCenterTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, wheelCenterTextSize)
+    }
+
+    /**
      * this function set wheel center text font family
      * also if this function don't call then text font family be Sans Serif(default)
      */
@@ -306,9 +604,10 @@ class LuckyWheelView @JvmOverloads constructor(
         wheelCenterTextView.typeface = typeface
     }
 
+
     /**
      * this function set list of wheel data
-     * also if this function don't call or given list is empty then wheel view is not drawn
+     * also if this function don't call or given list is empty then wheel view is draw only a circle
      * @see WheelData
      */
     fun setWheelData(wheelData: ArrayList<WheelData>) {
@@ -399,7 +698,7 @@ class LuckyWheelView @JvmOverloads constructor(
 
     /**
      * this function set wheel rotate speed multiplier
-     * also if this function don't call then wheel rotateSpeedMultiplier be 1(default)
+     * also if this function don't call then wheel rotateSpeedMultiplier be 1F(default)
      */
     fun setRotateSpeedMultiplier(rotateSpeedMultiplier: Float) {
         wheelView.setRotateSpeedMultiplier(rotateSpeedMultiplier = rotateSpeedMultiplier)
@@ -417,8 +716,8 @@ class LuckyWheelView @JvmOverloads constructor(
      * this function set wheel padding
      * also if this function don't call then wheel padding be 2dp(default)
      */
-    fun setWheelPadding(padding: Int) {
-        val paddingDp = (padding * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+    fun setWheelPadding(padding: Float) {
+        val paddingDp = padding.getDpValue()
         wheelView.setWheelPadding(padding = paddingDp)
     }
 
@@ -510,7 +809,7 @@ class LuckyWheelView @JvmOverloads constructor(
      * also if this function don't call then text padding be 20dp(default)
      */
     fun setTextPadding(textPadding: Int) {
-        val paddingDp = (textPadding * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+        val paddingDp = textPadding.getDpValue().toInt()
         wheelView.setTextPadding(textPadding = paddingDp)
     }
 

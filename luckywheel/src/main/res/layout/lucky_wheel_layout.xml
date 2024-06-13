@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,7 +10,8 @@
         android:id="@+id/wheelViewRoot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ivTopArrow">
+        android:layout_below="@id/ivTopArrow"
+        android:layout_centerHorizontal="true">
 
         <com.caneryilmaz.apps.luckywheel.ui.WheelView
             android:id="@+id/wheelView"
@@ -28,8 +28,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
             android:src="@drawable/ic_center_arrow"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/ivCenterText"
@@ -39,9 +38,7 @@
             android:gravity="center"
             android:textColor="#000000"
             android:textSize="16sp"
-            android:visibility="gone"
-            tools:text="Center\nText"
-            tools:visibility="visible" />
+            android:visibility="gone" />
     </RelativeLayout>
 
     <androidx.appcompat.widget.AppCompatImageView

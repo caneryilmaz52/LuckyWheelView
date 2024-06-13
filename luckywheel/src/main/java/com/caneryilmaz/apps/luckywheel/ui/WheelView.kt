@@ -90,7 +90,7 @@ class WheelView @JvmOverloads constructor(
 
     /**
      * this function set list of wheel data
-     * also if this function don't call or given list is empty then wheel view is can't draw a view
+     * also if this function don't call or given list is empty then wheel view is draw only a circle
      * @see WheelData
      */
     fun setWheelData(wheelData: ArrayList<WheelData>) {
@@ -132,7 +132,7 @@ class WheelView @JvmOverloads constructor(
 
     /**
      * this function set wheel rotate speed multiplier
-     * also if this function don't call then wheel rotateSpeedMultiplier be 1(default)
+     * also if this function don't call then wheel rotateSpeedMultiplier be 1F(default)
      */
     fun setRotateSpeedMultiplier(rotateSpeedMultiplier: Float) {
         this.rotateSpeedMultiplier = rotateSpeedMultiplier
@@ -452,10 +452,12 @@ class WheelView @JvmOverloads constructor(
 
                 startAngle += sweepAngle
             }
+        } else {
+            drawWheelBackground(canvas)
+        }
 
-            if (drawCenterPoint) {
-                drawCenterPoint(canvas)
-            }
+        if (drawCenterPoint) {
+            drawCenterPoint(canvas)
         }
     }
 

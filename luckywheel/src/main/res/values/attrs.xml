@@ -18,6 +18,7 @@
         </attr>
 
         <attr name="arrowAnimation" format="reference" />
+        <attr name="arrowAnimationEnable" format="boolean" />
 
         <attr name="wheelTopArrow" format="reference" />
         <attr name="wheelTopArrowWidth" format="dimension" />
@@ -29,23 +30,18 @@
         <attr name="wheelCenterArrowWidth" format="dimension" />
         <attr name="wheelCenterArrowHeight" format="dimension" />
         <attr name="wheelCenterArrowColor" format="color" />
-        <attr name="wheelCenterArrowMargin" format="dimension" />
+        <attr name="wheelCenterArrowMarginTop" format="dimension" />
+        <attr name="wheelCenterArrowMarginBottom" format="dimension" />
 
         <attr name="wheelCenterText" format="string" />
         <attr name="wheelCenterTextColor" format="color" />
         <attr name="wheelCenterTextSize" format="dimension" />
         <attr name="wheelCenterTextFont" format="reference" />
 
-        <attr name="wheelData" format="reference" />
-
-        <attr name="stopCenterOfItem" format="boolean" />
-
-        <attr name="target" format="integer" />
-
         <attr name="rotationViaSwipe" format="boolean" />
         <attr name="swipeDistance" format="integer" />
 
-        <attr name="rotateRandomTarget" format="boolean" />
+        <attr name="stopCenterOfItem" format="boolean" />
 
         <attr name="rotateTime" format="integer" />
         <attr name="rotateSpeed" format="enum">
@@ -64,16 +60,16 @@
 
         <attr name="drawCenterPoint" format="boolean" />
         <attr name="centerPointColor" format="color" />
-        <attr name="centerPointRadius" format="integer" />
+        <attr name="centerPointRadius" format="float" />
 
         <attr name="textOrientation" format="enum">
             <enum name="HORIZONTAL" value="1" />
             <enum name="VERTICAL" value="2" />
         </attr>
-        <attr name="textPadding" format="dimension" />
-        <attr name="textSize" format="dimension" />
+        <attr name="textPadding" format="integer" />
+        <attr name="textSize" format="integer" />
         <attr name="letterSpacing" format="float" />
-        <attr name="fontResourceId" format="reference" />
+        <attr name="textFont" format="reference" />
 
     </declare-styleable>
 </resources>
