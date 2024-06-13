@@ -9,9 +9,9 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-[![JitPack Version][jitpack-version-shield]][linkedin-url]
-[![JitPack Download Week][jitpack-download-week-shield]][linkedin-url]
-[![JitPack Download Month][jitpack-download-month-shield]][linkedin-url]
+[![JitPack Version][jitpack-version-shield]][jitpack-url]
+[![JitPack Download Week][jitpack-download-week-shield]][jitpack-url]
+[![JitPack Download Month][jitpack-download-month-shield]][jitpack-url]
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -76,7 +76,7 @@ dependencyResolutionManagement {
  
   ```gradle
  dependencies {
-	        implementation 'com.github.caneryilmaz52:LuckyWheelView:v1.0'
+	        implementation 'com.github.caneryilmaz52:LuckyWheelView:LATEST_VERSION'
 	}
   ```
 
@@ -89,8 +89,8 @@ dependencyResolutionManagement {
 ```xml
 <com.caneryilmaz.apps.luckywheel.ui.LuckyWheelView
         android:id="@+id/luckyWheelView"
-        android:layout_width="300dp"
-        android:layout_height="300dp" />
+        android:layout_width="350dp"
+        android:layout_height="350dp" />
 ```
 
 Populate a list of `WheelData`
@@ -169,111 +169,105 @@ Get the perfect look with customization combinations.
   <summary>Background Customization</summary>
   </br>
   
- Function Name | Description | Type | Default Value
---- | --- | --- | --- 
-`setRootLayoutBackgroundDrawable` | set a drawable to lucky wheel view background | `drawable` | `null`
-`setRootLayoutBackgroundColor` | set a color to lucky wheel view background | `color` | `transparent`
- `setRootLayoutPadding` | set padding of lucky wheel view | `dimension` | `5dp`
+ Function | Attributes | Description | Type | Default Value
+--- | --- | --- | --- | --- 
+`setRootLayoutBackgroundDrawable` | `rootLayoutBackgroundDrawable` | set a drawable to lucky wheel view background | `drawable` | `null`
+`setRootLayoutBackgroundColor` | `rootLayoutBackgroundColor` | set a color to lucky wheel view background | `color` | `transparent`
+`setRootLayoutPadding` | `rootLayoutPadding`, `rootLayoutPaddingLeft`, `rootLayoutPaddingTop`, `rootLayoutPaddingRight`, `rootLayoutPaddingBottom` | set padding of lucky wheel view | `dimension` | `5dp`
 </details>
 
 <details>
   <summary>Arrow Customization</summary>
   </br>
   
- Function Name | Description | Type | Default Value
---- | --- | --- | --- 
-`setArrowPosition` | set arrow position to top or center | `enum` | `ArrowPosition.TOP`
-`setArrowAnimationStatus` | set arrow animation status | `boolean` | `true`
-`setArrowAnimation` | set arrow animation resource | `reference` | Shake animation
-`setWheelTopArrow` | set top arrow image resource | `drawable` | -
-`setWheelTopArrowSize` | set top arrow size | `dimension` | `48dp`
-`setWheelTopArrowColor` | set top arrow color | `color` | -
-`setWheelTopArrowMargin` | set top arrow margin | `dimension` | `0dp`
-`setWheelCenterArrow` | set center arrow image resource | `drawable` | -
-`setWheelCenterArrowSize` | set center arrow size | `dimension` | `30dp`
-`setWheelCenterArrowColor` | set center arrow color | `color` | -
-`setWheelCenterArrowMargin` | set center arrow margin | `dimension` | `0dp`
-
+ Function | Attributes | Description | Type | Default Value
+--- | --- | --- | --- | --- 
+`setArrowPosition` | `arrowPosition` | set arrow position to top or center | `enum` | `ArrowPosition.TOP`
+`setArrowAnimationStatus` | `arrowAnimationEnable` | set arrow animation status | `boolean` | `true`
+`setArrowAnimation` | `arrowAnimation` | set arrow animation resource | `reference` | Shake animation
+`setWheelTopArrow` | `wheelTopArrow` | set top arrow image resource | `drawable` | -
+`setWheelTopArrowSize` | `wheelTopArrowWidth`, `wheelTopArrowHeight` | set top arrow size | `dimension` | `48dp`
+`setWheelTopArrowColor` | `wheelTopArrowColor` | set top arrow color | `color` | -
+`setWheelTopArrowMargin` | `wheelTopArrowMargin` | set top arrow margin | `dimension` | `0dp`
+`setWheelCenterArrow` | `wheelCenterArrow` | set center arrow image resource | `drawable` | -
+`setWheelCenterArrowSize` | `wheelCenterArrowWidth`, `wheelCenterArrowHeight` | set center arrow size | `dimension` | `30dp`
+`setWheelCenterArrowColor` | `wheelCenterArrowColor` | set center arrow color | `color` | -
+`setWheelCenterArrowMargin` | `wheelCenterArrowMarginTop`, `wheelCenterArrowMarginBottom` | set center arrow margin | `dimension` | `0dp`
 </details>
 
 <details>
   <summary>Wheel Center Text Customization</summary>
   </br>
   
- Function Name | Description | Type | Default Value
---- | --- | --- | --- 
-`setWheelCenterText` | set a text to lucky wheel view center | `string` | -
-`setWheelCenterTextColor` | set center text color | `color` | `#000000`
-`setWheelCenterTextSize` | set center text size | `dimension` | `16sp`
-`setWheelCenterTextFont` | set text font of center text | `typeface` | `Sans Serif`
-`setWheelCenterTextFont` | set text font resource of center text | `reference` | `Sans Serif`
-
+ Function | Attributes | Description | Type | Default Value
+--- | --- | --- | --- | --- 
+`setWheelCenterText` | `wheelCenterText` | set a text to lucky wheel view center | `string` | -
+`setWheelCenterTextColor` | `wheelCenterTextColor` | set center text color | `color` | `#000000`
+`setWheelCenterTextSize` | `wheelCenterTextSize` | set center text size | `dimension` | `16sp`
+`setWheelCenterTextFont` | `wheelCenterTextFont` | set text font of center text | `typeface` | `Sans Serif`
+`setWheelCenterTextFont` | `wheelCenterTextFont` |set text font resource of center text | `reference` | `Sans Serif`
 </details>
 
 <details>
   <summary>Wheel Rotation Customization</summary>
   </br>
   
- Function Name | Description | Type | Default Value
---- | --- | --- | --- 
-`setTarget` | set winner item position | `integer` | `0`
-`setRotateRandomTarget` | set random winner target | `boolean` | `false`
-`setRotationViaSwipe` | set rotate wheel via user swipe | `boolean` | `false`
-`setSwipeDistance` | set rotate wheel via swipe distance | `integer` | `100`
-`stopCenterOfItem` | set wheel stop position center or random position of wheel slice | `boolean` | `false`
-`setRotateTime` | set wheel rotation time in ms | `long` | `5000L`
-`setRotateSpeed` | set wheel rotation speed | `enum` | `RotationSpeed.Normal`
-`setRotateSpeedMultiplier` | set wheel rotation speed multiplier | `float` | `1F`
-
+ Function | Attributes | Description | Type | Default Value
+--- | --- | --- | --- | --- 
+`setTarget` | - |set winner item position | `integer` | `0`
+`setRotateRandomTarget` | - | set random winner target | `boolean` | `false`
+`setRotationViaSwipe` | `rotationViaSwipe` | set rotate wheel via user swipe | `boolean` | `false`
+`setSwipeDistance` | `swipeDistance` | set rotate wheel via swipe distance | `integer` | `100`
+`stopCenterOfItem` | `stopCenterOfItem` | set wheel stop position center or random position of wheel slice | `boolean` | `false`
+`setRotateTime` | `rotateTime` | set wheel rotation time in ms | `long` | `5000L`
+`setRotateSpeed` | `rotateSpeed` | set wheel rotation speed | `enum` | `RotationSpeed.Normal`
+`setRotateSpeedMultiplier` | `rotateSpeedMultiplier` | set wheel rotation speed multiplier | `float` | `1F`
 </details>
 
 <details>
   <summary>Wheel Customization</summary>
   </br>
   
- Function Name | Description | Type | Default Value
---- | --- | --- | --- 
-`setWheelColor` | set wheel color | `color` | `#FFFFFF`
-`setWheelPadding` | set wheel padding | `dimension` | `2dp`
-
+ Function | Attributes | Description | Type | Default Value
+--- | --- | --- | --- | --- 
+`setWheelColor` | `wheelColor` | set wheel color | `color` | `#FFFFFF`
+`setWheelPadding` | `wheelPadding` | set wheel padding | `dimension` | `2dp`
 </details>
 
 <details>
   <summary>Wheel Item Separator Customization</summary>
   </br>
   
- Function Name | Description | Type | Default Value
---- | --- | --- | --- 
-`drawItemSeparator` | set draw item separator | `boolean` | `false`
-`setWheelItemSeparatorColor` | set item separator color | `color` | `#000000`
-`setItemSeparatorThickness` | set item separator thickness | `float` | `1F`
-
+ Function | Attributes | Description | Type | Default Value
+--- | --- | --- | --- | --- 
+`drawItemSeparator` | `drawItemSeparator` | set draw item separator | `boolean` | `false`
+`setWheelItemSeparatorColor` | `wheelItemSeparatorColor` | set item separator color | `color` | `#000000`
+`setItemSeparatorThickness` | `itemSeparatorThickness` | set item separator thickness | `float` | `1F`
 </details>
 
 <details>
   <summary>Wheel Center Point Customization</summary>
   </br>
   
- Function Name | Description | Type | Default Value
---- | --- | --- | --- 
-`drawCenterPoint` | set draw a point center of wheel | `boolean` | `false`
-`setCenterPointColor` | set center point color | `color` | `#FFFFFF`
-`setCenterPointRadius` | set center point size | `float` | `30F`
-
+ Function | Attributes | Description | Type | Default Value
+--- | --- | --- | --- | --- 
+`drawCenterPoint` | `drawCenterPoint` | set draw a point center of wheel | `boolean` | `false`
+`setCenterPointColor` | `centerPointColor` | set center point color | `color` | `#FFFFFF`
+`setCenterPointRadius` | `centerPointRadius` | set center point size | `float` | `30F`
 </details>
 
 <details>
   <summary>Wheel Item Text Customization</summary>
   </br>
   
- Function Name | Description | Type | Default Value
---- | --- | --- | --- 
-`setTextOrientation` | set wheel item text orientation | `enum` | `TextOrientation.HORIZONTAL`
-`setTextPadding` | set wheel item text padding | `dimension` | `20dp`
-`setTextSize` | set wheel item text size | `dimension` | `16sp`
-`setTextLetterSpacing` | set wheel item text letter spacing between 0.1F - 1.0F | `float` | `0.1F`
-`setTextFont` | set text font of center text | `typeface` | `Sans Serif`
-`setTextFont` | set text font resource of center text | `reference` | `Sans Serif`
+ Function | Attributes | Description | Type | Default Value
+--- | --- | --- | --- | --- 
+`setTextOrientation` | `textOrientation` | set wheel item text orientation | `enum` | `TextOrientation.HORIZONTAL`
+`setTextPadding` | `textPadding` | set wheel item text padding | `dimension` | `20dp`
+`setTextSize` | `textSize` | set wheel item text size | `dimension` | `16sp`
+`setTextLetterSpacing` | `letterSpacing` | set wheel item text letter spacing between 0.1F - 1.0F | `float` | `0.1F`
+`setTextFont` | `textFont` | set text font of center text | `typeface` | `Sans Serif`
+`setTextFont` | `textFont` |set text font resource of center text | `reference` | `Sans Serif`
 
 </details>
 
@@ -281,7 +275,7 @@ Get the perfect look with customization combinations.
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Attributes development
+- [x] Attributes development
 - [ ] Arrow animation slowdown development
 - [ ] Any won effect (vibrate, confetti etc) when wheel stop
 - [ ] Light effect like carnival zone
@@ -352,3 +346,4 @@ Distributed under the [Apache 2.0 License](LICENSE). See `LICENSE.txt` for more 
 [jitpack-version-shield]: https://jitpack.io/v/caneryilmaz52/LuckyWheelView.svg
 [jitpack-download-week-shield]: https://jitpack.io/v/caneryilmaz52/LuckyWheelView/week.svg
 [jitpack-download-month-shield]: https://jitpack.io/v/caneryilmaz52/LuckyWheelView/month.svg
+[jitpack-url]: https://jitpack.io/#caneryilmaz52/LuckyWheelView
