@@ -11,7 +11,9 @@ import com.caneryilmaz.apps.luckywheel.constant.RotationStatus
 import com.caneryilmaz.apps.luckywheel.constant.TextOrientation
 import com.caneryilmaz.apps.luckywheel.data.WheelData
 import com.caneryilmaz.apps.luckywheel.listener.WheelViewListener
+import kotlin.math.cos
 import kotlin.math.min
+import kotlin.math.sin
 import kotlin.random.Random
 
 class WheelView @JvmOverloads constructor(
@@ -52,6 +54,9 @@ class WheelView @JvmOverloads constructor(
     private var itemTextSize: Float = 44F
     private var itemTextLetterSpacing: Float = 0.1F
     private var itemTextFont: Typeface = Typeface.SANS_SERIF
+
+    private var iconSizeMultiplier: Float = 1.0F
+    private var iconPosition: Float = 2.0F
 
     private var wheelViewListener: WheelViewListener? = null
 
@@ -269,6 +274,22 @@ class WheelView @JvmOverloads constructor(
     }
 
     /**
+     * this function set item icon size multiplier
+     * also if this function don't call then icon size multiplier be 1.0F(default)
+     */
+    fun setIconSizeMultiplier(sizeMultiplier: Float) {
+        iconSizeMultiplier = sizeMultiplier
+    }
+
+    /**
+     * this function set item icon position
+     * also if this function don't call then icon position be 2.0F(default)
+     */
+    fun setIconPosition(position: Float) {
+        iconPosition = position
+    }
+
+    /**
      * this function set rotation listener to wheel view
      * also if this function don't call then wheel view is not notify user
      * @see WheelViewListener
@@ -450,6 +471,10 @@ class WheelView @JvmOverloads constructor(
                     }
                 }
 
+                item.icon?.let { icon ->
+                    drawImage(canvas, startAngle, icon)
+                }
+
                 startAngle += sweepAngle
             }
         } else {
@@ -479,7 +504,7 @@ class WheelView @JvmOverloads constructor(
 
     /**
      * this function is draw wheel item text with given wheel data item text
-     * @param startAngle is wheel item index start angel in wheel
+     * @param startAngle is wheel item index start angle in wheel
      * @param sweepAngle is wheel item angle(wheel item width)
      */
     private fun drawText(canvas: Canvas?, startAngle: Float, sweepAngle: Float, text: String) {
@@ -522,7 +547,7 @@ class WheelView @JvmOverloads constructor(
 
     /**
      * this function is draw wheel item text with given wheel data item text
-     * @param startAngle is wheel item index start angel in wheel
+     * @param startAngle is wheel item index start angle in wheel
      * @param sweepAngle is wheel item angle(wheel item width)
      */
     private fun drawTextVertically(canvas: Canvas?, startAngle: Float, sweepAngle: Float, text: String) {
@@ -553,6 +578,27 @@ class WheelView @JvmOverloads constructor(
                 textPaint
             )
         }
+    }
+
+    /**
+     * this function is draw wheel item icon with given wheel data item icon
+     * @param startAngle is wheel item index start angle in wheel
+     */
+    private fun drawImage(canvas: Canvas, startAngle: Float, bitmap: Bitmap) {
+        val imgWidth: Int = ((radius / wheelData.size) * iconSizeMultiplier).toInt()
+
+        val angle = ((startAngle + 360f / wheelData.size / 2) * Math.PI / 180)
+
+        val horizontalOffset = (centerOfWheel + radius / 2 / iconPosition * cos(angle))
+        val verticalOffset = (centerOfWheel + radius / 2 / iconPosition * sin(angle))
+
+        val rect = Rect(
+            (horizontalOffset - imgWidth / 2).toInt(),
+            (verticalOffset - imgWidth / 2).toInt(),
+            (horizontalOffset + imgWidth / 2).toInt(),
+            (verticalOffset + imgWidth / 2).toInt()
+        )
+        canvas.drawBitmap(bitmap, null, rect, null)
     }
 
     /**

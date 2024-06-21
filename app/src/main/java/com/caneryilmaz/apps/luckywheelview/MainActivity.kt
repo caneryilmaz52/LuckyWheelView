@@ -1,5 +1,6 @@
 package com.caneryilmaz.apps.luckywheelview
 
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
@@ -17,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnRotate: AppCompatButton
 
     private val backgroundColorList = arrayListOf(
-        "#FFFFFF",
+        "#00FFFF",
         "#00BCD4",
         "#F44336",
         "#9C27B0",
@@ -56,7 +57,8 @@ class MainActivity : AppCompatActivity() {
             val item = WheelData(
                 text = "Item\n#${it + 1}",
                 textColor = textColor,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColor,
+                icon = BitmapFactory.decodeResource(resources,R.drawable.png_smile)
             )
             dummyWheelData.add(item)
         }

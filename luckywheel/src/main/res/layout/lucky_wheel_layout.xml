@@ -30,6 +30,15 @@
             android:src="@drawable/ic_center_arrow"
             android:visibility="gone" />
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivCenterImage"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignTop="@id/wheelView"
+            android:layout_alignBottom="@id/wheelView"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/ivCenterText"
             android:layout_width="wrap_content"

@@ -15,6 +15,7 @@ import android.widget.RelativeLayout
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isGone
 import com.caneryilmaz.apps.luckywheel.R
 import com.caneryilmaz.apps.luckywheel.constant.ArrowPosition
 import com.caneryilmaz.apps.luckywheel.constant.RotationSpeed
@@ -35,6 +36,7 @@ class LuckyWheelView @JvmOverloads constructor(
     private var wheelView: WheelView
     private var wheelTopArrow: AppCompatImageView
     private var wheelCenterArrow: AppCompatImageView
+    private var wheelCenterImage: AppCompatImageView
     private var wheelCenterTextView: AppCompatTextView
 
     private var arrowPosition: Int = ArrowPosition.TOP
@@ -67,6 +69,7 @@ class LuckyWheelView @JvmOverloads constructor(
         rootLayout = findViewById(R.id.rootLayout)
         wheelTopArrow = findViewById(R.id.ivTopArrow)
         wheelCenterArrow = findViewById(R.id.ivCenterArrow)
+        wheelCenterImage = findViewById(R.id.ivCenterImage)
         wheelCenterTextView = findViewById(R.id.ivCenterText)
         wheelView = findViewById(R.id.wheelView)
 
@@ -159,6 +162,17 @@ class LuckyWheelView @JvmOverloads constructor(
             setWheelTopArrowMarginBottom(margin = margin)
         }
 
+        typedArray.getDrawable(R.styleable.LuckyWheelView_wheelCenterImage)?.let { drawable ->
+            setWheelCenterImage(wheelCenterImageDrawable = drawable)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_wheelCenterImageWidth, 30.getDpValue()).let { arrowWidth ->
+            setWheelCenterImageWidth(width = arrowWidth)
+        }
+
+        typedArray.getDimension(R.styleable.LuckyWheelView_wheelCenterImageHeight, 30.getDpValue()).let { arrowHeight ->
+            setWheelCenterImageHeight(height = arrowHeight)
+        }
 
         typedArray.getDrawable(R.styleable.LuckyWheelView_wheelCenterArrow)?.let { drawable ->
             setWheelCenterArrow(wheelArrowDrawable = drawable)
@@ -280,6 +294,14 @@ class LuckyWheelView @JvmOverloads constructor(
             setTextFont(typeface = font)
         }
 
+        typedArray.getFloat(R.styleable.LuckyWheelView_iconSizeMultiplier, 1.0F).let { sizeMultiplier ->
+            setIconSizeMultiplier(sizeMultiplier = sizeMultiplier)
+        }
+
+        typedArray.getFloat(R.styleable.LuckyWheelView_iconPosition, 2.0F).let { position ->
+            setIconPosition(position = position)
+        }
+
         typedArray.recycle()
     }
 
@@ -391,6 +413,13 @@ class LuckyWheelView @JvmOverloads constructor(
         setWheelTopArrowMargin(margin = margin)
     }
 
+    fun setWheelTopArrow(wheelArrowDrawable: Drawable, width: Float, height: Float, wheelTopArrowColor: Int, margin: Float) {
+        setWheelTopArrow(wheelArrowDrawable = wheelArrowDrawable)
+        setWheelTopArrowSize(width = width, height = height)
+        setWheelTopArrowColor(wheelTopArrowColor = wheelTopArrowColor)
+        setWheelTopArrowMargin(margin = margin)
+    }
+
     /**
      * this function set wheel top arrow resource
      */
@@ -456,8 +485,64 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
 
+    fun setWheelCenterImage(wheelCenterImageId: Int, width: Float, height: Float) {
+        setWheelCenterImage(wheelCenterImageId = wheelCenterImageId)
+        setWheelCenterImageSize(width = width, height = height)
+    }
+
+    fun setWheelCenterImage(wheelCenterImageDrawable: Drawable, width: Float, height: Float) {
+        setWheelCenterImage(wheelCenterImageDrawable = wheelCenterImageDrawable)
+        setWheelCenterImageSize(width = width, height = height)
+    }
+
+    /**
+     * this function set wheel center image resource
+     */
+    fun setWheelCenterImage(wheelCenterImageId: Int) {
+        wheelCenterImage.isGone = false
+        wheelCenterImage.setImageResource(wheelCenterImageId)
+    }
+
+    /**
+     * this function set wheel center image drawable
+     */
+    fun setWheelCenterImage(wheelCenterImageDrawable: Drawable) {
+        wheelCenterImage.isGone = false
+        wheelCenterImage.setImageDrawable(wheelCenterImageDrawable)
+    }
+
+    /**
+     * this function set wheel center image size with DP value
+     */
+    fun setWheelCenterImageSize(width: Float, height: Float) {
+        setWheelCenterImageWidth(width.getDpValueFloat())
+        setWheelCenterImageHeight(height.getDpValueFloat())
+    }
+
+    /**
+     * this function set wheel center image width with DP value
+     */
+    private fun setWheelCenterImageWidth(width: Float) {
+        wheelCenterImage.layoutParams.width = width.toInt()
+    }
+
+    /**
+     * this function set wheel center image height with DP value
+     */
+    private fun setWheelCenterImageHeight(height: Float) {
+        wheelCenterImage.layoutParams.height = height.toInt()
+    }
+
+
     fun setWheelCenterArrow(wheelArrowId: Int, width: Float, height: Float, wheelCenterArrowColor: Int, marginTop: Float, marginBottom: Float) {
         setWheelCenterArrow(wheelArrowId = wheelArrowId)
+        setWheelCenterArrowSize(width = width, height = height)
+        setWheelCenterArrowColor(wheelCenterArrowColor = wheelCenterArrowColor)
+        setWheelCenterArrowMargin(marginTop = marginTop, marginBottom = marginBottom)
+    }
+
+    fun setWheelCenterArrow(wheelArrowDrawable: Drawable, width: Float, height: Float, wheelCenterArrowColor: Int, marginTop: Float, marginBottom: Float) {
+        setWheelCenterArrow(wheelArrowDrawable = wheelArrowDrawable)
         setWheelCenterArrowSize(width = width, height = height)
         setWheelCenterArrowColor(wheelCenterArrowColor = wheelCenterArrowColor)
         setWheelCenterArrowMargin(marginTop = marginTop, marginBottom = marginBottom)
@@ -851,6 +936,22 @@ class LuckyWheelView @JvmOverloads constructor(
      */
     fun setTextFont(typeface: Typeface) {
         wheelView.setTextFont(typeface = typeface)
+    }
+
+    /**
+     * this function set item icon size multiplier
+     * also if this function don't call then icon size multiplier be 1.0F(default)
+     */
+    fun setIconSizeMultiplier(sizeMultiplier: Float) {
+        wheelView.setIconSizeMultiplier(sizeMultiplier = sizeMultiplier)
+    }
+
+    /**
+     * this function set item icon position
+     * also if this function don't call then icon position be 2.0F(default)
+     */
+    fun setIconPosition(position: Float) {
+        wheelView.setIconPosition(position = position)
     }
 
 

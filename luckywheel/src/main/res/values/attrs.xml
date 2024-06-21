@@ -26,6 +26,10 @@
         <attr name="wheelTopArrowColor" format="color" />
         <attr name="wheelTopArrowMargin" format="dimension" />
 
+        <attr name="wheelCenterImage" format="reference" />
+        <attr name="wheelCenterImageWidth" format="dimension" />
+        <attr name="wheelCenterImageHeight" format="dimension" />
+
         <attr name="wheelCenterArrow" format="reference" />
         <attr name="wheelCenterArrowWidth" format="dimension" />
         <attr name="wheelCenterArrowHeight" format="dimension" />
@@ -70,6 +74,9 @@
         <attr name="textSize" format="integer" />
         <attr name="letterSpacing" format="float" />
         <attr name="textFont" format="reference" />
+
+        <attr name="iconPosition" format="float" />
+        <attr name="iconSizeMultiplier" format="float" />
 
     </declare-styleable>
 </resources>
