@@ -93,14 +93,15 @@ dependencyResolutionManagement {
         android:layout_height="350dp" />
 ```
 
-Populate a list of `WheelData`
+Populate a list of `WheelData` (Note: `icon` default value is null and null icons are not drawn)
 
 ```kotlin
 val wheelData = ArrayList<WheelData>()
 val item = WheelData(
                 text = itemText,
                 textColor = textColor,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColor,
+                icon = itemIconBitmap
             )
 ```
 
@@ -156,7 +157,7 @@ luckyWheelView.rotateWheel()
 <!-- EXAMPLES -->
 ## Examples
 
-<a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%201.png" width="200"></a>  <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%202.png" width="200"></a>  <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%203.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%204.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%205.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%206.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%207.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%208.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%209.png" width="200"></a>
+<a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%201.png" width="200"></a>  <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%202.png" width="200"></a>  <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%203.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%204.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%205.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%206.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%207.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%208.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%209.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%2010.png" width="200"></a> <a><img src="https://github.com/caneryilmaz52/LuckyWheelView/blob/main/images/wheel%2011.png" width="200"></a>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -206,6 +207,16 @@ Get the perfect look with customization combinations.
 `setWheelCenterTextSize` | `wheelCenterTextSize` | set center text size | `dimension` | `16sp`
 `setWheelCenterTextFont` | `wheelCenterTextFont` | set text font of center text | `typeface` | `Sans Serif`
 `setWheelCenterTextFont` | `wheelCenterTextFont` |set text font resource of center text | `reference` | `Sans Serif`
+</details>
+
+<details>
+  <summary>Wheel Center Image Customization</summary>
+  </br>
+  
+ Function | Attributes | Description | Type | Default Value
+--- | --- | --- | --- | --- 
+`setWheelCenterImage` | `wheelCenterImage` | set center image resource | `drawable` | -
+`setWheelCenterImageSize` | `wheelCenterImageWidth`, `wheelCenterImageHeight` | set center image size | `dimension` | `30dp`
 </details>
 
 <details>
@@ -268,14 +279,22 @@ Get the perfect look with customization combinations.
 `setTextLetterSpacing` | `letterSpacing` | set wheel item text letter spacing between 0.1F - 1.0F | `float` | `0.1F`
 `setTextFont` | `textFont` | set text font of center text | `typeface` | `Sans Serif`
 `setTextFont` | `textFont` |set text font resource of center text | `reference` | `Sans Serif`
+</details>
 
+<details>
+  <summary>Wheel Item Icon Customization</summary>
+  </br>
+  
+ Function | Attributes | Description | Type | Default Value
+--- | --- | --- | --- | --- 
+`setIconPosition` | `iconPosition` | set wheel item icon position | `float` | `2.0F`
+`setIconSizeMultiplier` | `iconSizeMultiplier` | set wheel item icon size multiplier | `float` | `1.0F`
 </details>
 
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Attributes development
 - [ ] Arrow animation slowdown development
 - [ ] Any won effect (vibrate, confetti etc) when wheel stop
 - [ ] Light effect like carnival zone
