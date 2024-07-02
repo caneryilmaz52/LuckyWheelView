@@ -13,6 +13,8 @@
 [![JitPack Download Week][jitpack-download-week-shield]][jitpack-url]
 [![JitPack Download Month][jitpack-download-month-shield]][jitpack-url]
 
+[![Android Weekly][android-weekly-shield]][android-weekly-url]
+
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -366,3 +368,5 @@ Distributed under the [Apache 2.0 License](LICENSE). See `LICENSE.txt` for more 
 [jitpack-download-week-shield]: https://jitpack.io/v/caneryilmaz52/LuckyWheelView/week.svg
 [jitpack-download-month-shield]: https://jitpack.io/v/caneryilmaz52/LuckyWheelView/month.svg
 [jitpack-url]: https://jitpack.io/#caneryilmaz52/LuckyWheelView
+[android-weekly-shield]: https://androidweekly.net/issues/issue-629/badge
+[android-weekly-url]: https://androidweekly.net/issues/issue-629
