@@ -187,7 +187,9 @@ Get the perfect look with customization combinations.
 --- | --- | --- | --- | --- 
 `setArrowPosition` | `arrowPosition` | set arrow position to top or center | `enum` | `ArrowPosition.TOP`
 `setArrowAnimationStatus` | `arrowAnimationEnable` | set arrow animation status | `boolean` | `true`
-`setArrowAnimation` | `arrowAnimation` | set arrow animation resource | `reference` | Shake animation
+`setArrowSwingDuration` | `arrowSwingDuration` | set arrow swing animation duration | `integer` | `50ms`
+`setArrowSwingDistance` | `arrowSwingDistance` | set arrow swing animation distance | `integer` | `100`
+`setArrowSwingSlowdownMultiplier` | `arrowSwingSlowdownMultiplier` | set arrow swing animation slowdown multiplier | `float` | `0.1F`
 `setWheelTopArrow` | `wheelTopArrow` | set top arrow image resource | `drawable` | -
 `setWheelTopArrowSize` | `wheelTopArrowWidth`, `wheelTopArrowHeight` | set top arrow size | `dimension` | `48dp`
 `setWheelTopArrowColor` | `wheelTopArrowColor` | set top arrow color | `color` | -
@@ -235,6 +237,8 @@ Get the perfect look with customization combinations.
 `setRotateTime` | `rotateTime` | set wheel rotation time in ms | `long` | `5000L`
 `setRotateSpeed` | `rotateSpeed` | set wheel rotation speed | `enum` | `RotationSpeed.Normal`
 `setRotateSpeedMultiplier` | `rotateSpeedMultiplier` | set wheel rotation speed multiplier | `float` | `1F`
+`enableVibration` | `enableVibration` | set vibration enable when wheel rotation stop | `boolean` | `false`
+`setVibratePattern` | - | set vibration pattern | `LongArray` | `longArrayOf(200, 500, 250)`
 </details>
 
 <details>
