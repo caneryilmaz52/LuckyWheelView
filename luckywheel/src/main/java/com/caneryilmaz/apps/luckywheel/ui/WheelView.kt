@@ -321,6 +321,7 @@ class WheelView @JvmOverloads constructor(
 
                     wheelViewListener?.onRotationComplete(wheelData[target])
 
+                    animation.removeAllListeners()
                     clearAnimation()
                 }
 
@@ -360,6 +361,7 @@ class WheelView @JvmOverloads constructor(
 
                 wheelViewListener?.onRotationComplete(wheelData[randomTarget])
 
+                animation.removeAllListeners()
                 clearAnimation()
             }
 
@@ -389,6 +391,7 @@ class WheelView @JvmOverloads constructor(
 
             override fun onAnimationEnd(animation: Animator) {
                 wheelViewListener?.onRotationStatus(RotationStatus.IDLE)
+                animation.removeAllListeners()
                 clearAnimation()
             }
 

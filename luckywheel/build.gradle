@@ -54,11 +54,11 @@ afterEvaluate {
                 from components.release
                 groupId = "com.github.caneryilmaz52"
                 artifactId = "LuckyWheelView"
-                version = "1.0"
+                version = "1.0.1"
 
                 pom {
                     name.set("Lucky Wheel View")
-                    description.set("A custom Lucky Wheel View developed with Kotlin.")
+                    description.set("A custom lightweight component that displays a Lucky Wheel developed with Kotlin. Features easy customize of colors , text, icon, arrow, animation, rotation and addition of items and it's very easy to integrate in your application.")
                     url.set("https://github.com/caneryilmaz52/LuckyWheelView")
 
                     licenses {

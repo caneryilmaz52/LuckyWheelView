@@ -17,8 +17,10 @@
             <enum name="CENTER" value="2" />
         </attr>
 
-        <attr name="arrowAnimation" format="reference" />
         <attr name="arrowAnimationEnable" format="boolean" />
+        <attr name="arrowSwingDuration" format="integer" />
+        <attr name="arrowSwingDistance" format="integer" />
+        <attr name="arrowSwingSlowdownMultiplier" format="float" />
 
         <attr name="wheelTopArrow" format="reference" />
         <attr name="wheelTopArrowWidth" format="dimension" />
@@ -77,6 +79,8 @@
 
         <attr name="iconPosition" format="float" />
         <attr name="iconSizeMultiplier" format="float" />
+
+        <attr name="enableVibration" format="boolean" />
 
     </declare-styleable>
 </resources>

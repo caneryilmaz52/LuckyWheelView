@@ -1,17 +1,24 @@
 package com.caneryilmaz.apps.luckywheel.ui
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
+import androidx.annotation.RequiresPermission
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
@@ -42,7 +49,11 @@ class LuckyWheelView @JvmOverloads constructor(
     private var arrowPosition: Int = ArrowPosition.TOP
 
     private var arrowAnimStatus: Boolean = true
-    private var arrowAnimId: Int = R.anim.shake
+    private var arrowLeftSwingAnimator: ObjectAnimator? = null
+    private var arrowRightSwingAnimator: ObjectAnimator? = null
+    private var arrowSwingDistance: Int = 10
+    private var arrowSwingDuration: Int = 50
+    private var arrowSwingSlowdownMultiplier: Float = 0.1F
 
     private var rotationStatus: Int = RotationStatus.IDLE
 
@@ -62,6 +73,15 @@ class LuckyWheelView @JvmOverloads constructor(
 
     private var targetReachListener: TargetReachListener? = null
     private var rotationStatusListener: RotationStatusListener? = null
+
+    private var vibrationEnabled: Boolean = false
+    private var vibrator: Vibrator? = null
+    /**
+     * Start with delay 200 milliseconds
+     * Vibrate for 500 milliseconds
+     * Sleep for 250 milliseconds
+     */
+    private var vibratePattern: LongArray = longArrayOf(200, 500, 250)
 
     init {
         inflate(context, R.layout.lucky_wheel_layout, this)
@@ -134,8 +154,16 @@ class LuckyWheelView @JvmOverloads constructor(
             setArrowPosition(arrowPosition = arrowPosition)
         }
 
-        typedArray.getResourceId(R.styleable.LuckyWheelView_arrowAnimation, R.anim.shake).let { arrowAnimation ->
-            setArrowAnimation(animationResourceId = arrowAnimation)
+        typedArray.getInt(R.styleable.LuckyWheelView_arrowSwingDuration, 50).let { arrowSwingDuration ->
+            setArrowSwingDuration(arrowSwingDuration = arrowSwingDuration)
+        }
+
+        typedArray.getInt(R.styleable.LuckyWheelView_arrowSwingDistance, 10).let { arrowSwingDistance ->
+            setArrowSwingDistance(arrowSwingDistance = arrowSwingDistance)
+        }
+
+        typedArray.getFloat(R.styleable.LuckyWheelView_arrowSwingSlowdownMultiplier, 0.1F).let { arrowSwingSlowdownMultiplier ->
+            setArrowSwingSlowdownMultiplier(arrowSwingSlowdownMultiplier = arrowSwingSlowdownMultiplier)
         }
 
         typedArray.getBoolean(R.styleable.LuckyWheelView_arrowAnimationEnable, true).let { arrowAnimationEnable ->
@@ -302,6 +330,15 @@ class LuckyWheelView @JvmOverloads constructor(
             setIconPosition(position = position)
         }
 
+        typedArray.getBoolean(R.styleable.LuckyWheelView_enableVibration, false).let { enableVibration ->
+            if (enableVibration) {
+                this.vibrationEnabled = true
+                enableVibration()
+            } else {
+                this.vibrationEnabled = false
+            }
+        }
+
         typedArray.recycle()
     }
 
@@ -391,18 +428,35 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
-     * this function set wheel arrow animation
-     */
-    fun setArrowAnimation(animationResourceId: Int) {
-        this.arrowAnimId = animationResourceId
-    }
-
-    /**
      * this function set wheel arrow animation status enable or disable
      * also if this function don't call then arrow animation status be true(default)
      */
     fun setArrowAnimationStatus(arrowAnimStatus: Boolean) {
         this.arrowAnimStatus = arrowAnimStatus
+    }
+
+    /**
+     * this function set wheel arrow swing animation duration
+     * also if this function don't call then arrow swing animation duration be 50ms(default)
+     */
+    fun setArrowSwingDuration(arrowSwingDuration: Int) {
+        this.arrowSwingDuration = arrowSwingDuration
+    }
+
+    /**
+     * this function set wheel arrow swing animation distance
+     * also if this function don't call then arrow swing animation distance be 10F(default)
+     */
+    fun setArrowSwingDistance(arrowSwingDistance: Int) {
+        this.arrowSwingDistance = arrowSwingDistance
+    }
+
+    /**
+     * this function set wheel arrow swing animation slowdown multiplier
+     * also if this function don't call then arrow swing animation slowdown multiplier be 0.1F(default)
+     */
+    fun setArrowSwingSlowdownMultiplier(arrowSwingSlowdownMultiplier: Float) {
+        this.arrowSwingSlowdownMultiplier = arrowSwingSlowdownMultiplier
     }
 
 
@@ -955,6 +1009,48 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
 
+    /**
+     * this function set vibration enable or disable when wheel rotation stop
+     * also if this function don't call then vibration when wheel rotation stop default false
+     * also if VIBRATE permission not granted then vibration when wheel rotation stop default false
+     * also if device has not vibrator then vibration when wheel rotation stop default false
+     * @see checkVibrateService
+     */
+    @RequiresPermission(value = android.Manifest.permission.VIBRATE)
+    fun enableVibration() {
+        if (context.checkSelfPermission(android.Manifest.permission.VIBRATE) == PackageManager.PERMISSION_GRANTED) {
+            this.vibrationEnabled = true
+            checkVibrateService()
+        } else {
+            this.vibrationEnabled = false
+        }
+    }
+
+    private fun checkVibrateService() {
+        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        if (vibrator?.hasVibrator() == true) {
+            this.vibrationEnabled = true
+        } else {
+            this.vibrationEnabled = false
+        }
+    }
+
+    /**
+     * this function set vibration pattern
+     * also if this function don't call then vibration pattern default longArrayOf(200, 500, 250)
+     * @see vibratePattern
+     */
+    fun setVibratePattern(pattern: LongArray) {
+        this.vibratePattern = pattern
+    }
+
+
     fun setListeners(targetReachListener: TargetReachListener, rotationStatusListener: RotationStatusListener) {
         setTargetReachListener(targetReachListener = targetReachListener)
         setRotationStatusListener(rotationStatusListener = rotationStatusListener)
@@ -1013,36 +1109,128 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
-     * this function start shake animation to selected arrow position
+     * this function start swing animation to selected arrow position
      * this function is not for user
      */
     private fun startArrowAnimation() {
         when (arrowPosition) {
             ArrowPosition.TOP -> {
-                wheelTopArrow.startAnimation(AnimationUtils.loadAnimation(context, arrowAnimId))
+                arrowRightSwingAnimator = ObjectAnimator.ofFloat(wheelTopArrow, "rotation", -arrowSwingDistance.toFloat(), arrowSwingDistance.toFloat())
+                arrowLeftSwingAnimator = ObjectAnimator.ofFloat(wheelTopArrow, "rotation", -arrowSwingDistance.toFloat(), arrowSwingDistance.toFloat())
             }
             ArrowPosition.CENTER -> {
-                wheelCenterArrow.startAnimation(AnimationUtils.loadAnimation(context, arrowAnimId))
+                arrowRightSwingAnimator = ObjectAnimator.ofFloat(wheelCenterArrow, "rotation", -arrowSwingDistance.toFloat(), arrowSwingDistance.toFloat())
+                arrowLeftSwingAnimator = ObjectAnimator.ofFloat(wheelCenterArrow, "rotation", -arrowSwingDistance.toFloat(), arrowSwingDistance.toFloat())
             }
             else -> {
-                wheelTopArrow.startAnimation(AnimationUtils.loadAnimation(context, arrowAnimId))
+                arrowRightSwingAnimator = ObjectAnimator.ofFloat(wheelTopArrow, "rotation", -arrowSwingDistance.toFloat(), arrowSwingDistance.toFloat())
+                arrowLeftSwingAnimator = ObjectAnimator.ofFloat(wheelTopArrow, "rotation",  -arrowSwingDistance.toFloat(), arrowSwingDistance.toFloat())
             }
         }
+
+        startRightSwing(arrowSwingDuration.toLong())
     }
 
     /**
-     * this function clear shake animation from arrows
+     * this function start swing left animation to selected arrow position
+     * this function is not for user
+     * @see startRightSwing
+     */
+    private fun startLeftSwing(duration: Long) {
+        arrowLeftSwingAnimator!!.removeAllListeners()
+        arrowLeftSwingAnimator!!.duration = duration
+        arrowLeftSwingAnimator!!.interpolator = null
+        arrowLeftSwingAnimator!!.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {}
+
+            override fun onAnimationEnd(animation: Animator) {
+                if (rotationStatus == RotationStatus.ROTATING) {
+                    val slowdownDuration = ((duration * arrowSwingSlowdownMultiplier) + duration).toLong()
+                    startRightSwing(slowdownDuration)
+                }
+            }
+
+            override fun onAnimationCancel(animation: Animator) {}
+
+            override fun onAnimationRepeat(animation: Animator) {}
+        })
+        arrowLeftSwingAnimator!!.start()
+    }
+
+    /**
+     * this function start swing right animation to selected arrow position
+     * this function is not for user
+     * @see startLeftSwing
+     */
+    private fun startRightSwing(duration: Long) {
+        arrowRightSwingAnimator!!.removeAllListeners()
+        arrowRightSwingAnimator!!.duration = duration
+        arrowRightSwingAnimator!!.interpolator = null
+        arrowRightSwingAnimator!!.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {}
+
+            override fun onAnimationEnd(animation: Animator) {
+                if (rotationStatus == RotationStatus.ROTATING) {
+                    val slowdownDuration = ((duration * arrowSwingSlowdownMultiplier) + duration).toLong()
+                    startLeftSwing(slowdownDuration)
+                }
+            }
+
+            override fun onAnimationCancel(animation: Animator) {}
+
+            override fun onAnimationRepeat(animation: Animator) {}
+        })
+        arrowRightSwingAnimator!!.start()
+    }
+
+    /**
+     * this function clear swing animation from arrows
+     * also resets arrows position
      * this function is not for user
      */
     private fun clearArrowAnimation() {
-        wheelTopArrow.clearAnimation()
-        wheelCenterArrow.clearAnimation()
+        arrowRightSwingAnimator!!.cancel()
+        arrowLeftSwingAnimator!!.cancel()
+
+        val arrowCenterPositionAnimator = when (arrowPosition) {
+            ArrowPosition.TOP -> {
+                ObjectAnimator.ofFloat(wheelTopArrow, "rotation", 0F, 0F)
+            }
+            ArrowPosition.CENTER -> {
+                ObjectAnimator.ofFloat(wheelCenterArrow, "rotation", 0F, 0F)
+            }
+            else -> {
+                ObjectAnimator.ofFloat(wheelTopArrow, "rotation", 0F, 0F)
+            }
+        }
+        arrowCenterPositionAnimator.duration = 10
+        arrowCenterPositionAnimator.start()
+        arrowCenterPositionAnimator.cancel()
+        arrowCenterPositionAnimator.removeAllListeners()
+    }
+
+    /**
+     * this function vibrate device with given vibrate pattern or default vibrate pattern
+     * this function is not for user
+     * @see setVibratePattern
+     */
+    @RequiresPermission(value = android.Manifest.permission.VIBRATE)
+    private fun vibrate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            vibrator?.vibrate(VibrationEffect.createWaveform(vibratePattern, -1))
+        } else {
+            vibrator?.vibrate(vibratePattern, -1)
+        }
     }
 
     override fun onRotationComplete(wheelData: WheelData) {
         targetReachListener?.onTargetReached(wheelData = wheelData)
 
         clearArrowAnimation()
+
+        if (context.checkSelfPermission(android.Manifest.permission.VIBRATE) == PackageManager.PERMISSION_GRANTED) {
+            vibrate()
+        }
     }
 
     override fun onRotationStatus(rotationStatus: Int) {
