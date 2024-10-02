@@ -301,8 +301,7 @@ Get the perfect look with customization combinations.
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Arrow animation slowdown development
-- [ ] Any won effect (vibrate, confetti etc) when wheel stop
+- [ ] Any won effect (confetti, sound etc) when wheel stop
 - [ ] Light effect like carnival zone
 - [ ] Gradient item background
 
