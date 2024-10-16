@@ -15,6 +15,8 @@
 
 [![Android Weekly][android-weekly-shield]][android-weekly-url]
 
+[!["Buy Me A Coffee"][buy-me-a-coffee-shield]][buy-me-a-coffee-url]
+
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -345,9 +347,7 @@ Distributed under the [Apache 2.0 License](LICENSE). See `LICENSE.txt` for more 
   <a>
     <img src="https://avatars.githubusercontent.com/u/32595397?s=400&u=2f3051570d7ad9d65304f34eba943012f380433d&v=4" width="200">
   </a>
-</p> 
-
-
+</p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -373,3 +373,5 @@ Distributed under the [Apache 2.0 License](LICENSE). See `LICENSE.txt` for more 
 [jitpack-url]: https://jitpack.io/#caneryilmaz52/LuckyWheelView
 [android-weekly-shield]: https://androidweekly.net/issues/issue-629/badge
 [android-weekly-url]: https://androidweekly.net/issues/issue-629
+[buy-me-a-coffee-shield]: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
+[buy-me-a-coffee-url]: https://www.buymeacoffee.com/caneryilmaz
