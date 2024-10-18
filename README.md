@@ -9,13 +9,10 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
+[![Android Weekly][android-weekly-shield]][android-weekly-url]
 [![JitPack Version][jitpack-version-shield]][jitpack-url]
 [![JitPack Download Week][jitpack-download-week-shield]][jitpack-url]
 [![JitPack Download Month][jitpack-download-month-shield]][jitpack-url]
-
-[![Android Weekly][android-weekly-shield]][android-weekly-url]
-
-[!["Buy Me A Coffee"][buy-me-a-coffee-shield]][buy-me-a-coffee-url]
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -26,6 +23,7 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#examples">Examples</a></li>
     <li><a href="#customization">Customization</a></li>
+    <li><a href="#support">Support</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -298,6 +296,19 @@ Get the perfect look with customization combinations.
 `setIconPosition` | `iconPosition` | set wheel item icon position | `float` | `2.0F`
 `setIconSizeMultiplier` | `iconSizeMultiplier` | set wheel item icon size multiplier | `float` | `1.0F`
 </details>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- Support -->
+## Support
+
+Having amazing people like you behind me is a huge motivation to keep pushing forward and improving my work. 💪
+
+If you like the work that I do, you can help and support me by buying a cup of coffee. ☕️
+
+[!["Buy Me A Coffee"][buy-me-a-coffee-shield]][buy-me-a-coffee-url]
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- ROADMAP -->
