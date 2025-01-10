@@ -157,7 +157,7 @@ class WheelView @JvmOverloads constructor(
     }
 
     /**
-     * @param rotationDirection is wheel rotate direction [RotationDirection.CLOCKWISE], [RotationDirection.COUNTER_CLOCKWISE]
+     * @param rotationDirection is wheel rotate direction [RotationDirection.CLOCKWISE], [RotationDirection.COUNTER_CLOCKWISE], default value [RotationDirection.CLOCKWISE]
      */
     fun setRotateDirection(rotationDirection: RotationDirection) {
         this.rotationDirection = rotationDirection
@@ -392,7 +392,7 @@ class WheelView @JvmOverloads constructor(
      * * is letter spacing of wheel items text
      * - letterSpacing must be in range `0.0F` - `1.0F`
      * - letterSpacing is not in range then letter spacing be `0.1F`
-     * - default value `1dp`
+     * - default value `0.1F`
      */
     fun setTextLetterSpacing(letterSpacing: Float) {
         itemTextLetterSpacing = letterSpacing

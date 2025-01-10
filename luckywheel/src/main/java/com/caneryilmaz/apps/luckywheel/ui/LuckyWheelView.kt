@@ -516,8 +516,8 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
-     * @param width is width of wheel center image, default value `wrap_content`
-     * @param height is height of wheel center image, default value `wrap_content`
+     * @param width is width of wheel center image, default value `30dp`
+     * @param height is height of wheel center image, default value `30dp`
      */
     fun setWheelCenterImageSize(width: Float, height: Float) {
         setWheelCenterImageWidth(width.getDpValueFloat())
@@ -525,14 +525,14 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
-     * @param width is width of wheel center image, default value `wrap_content`
+     * @param width is width of wheel center image, default value `30dp`
      */
     private fun setWheelCenterImageWidth(width: Float) {
         wheelCenterImage.layoutParams.width = width.toInt()
     }
 
     /**
-     * @param height is height of wheel center image, default value `wrap_content`
+     * @param height is height of wheel center image, default value `30dp`
      */
     private fun setWheelCenterImageHeight(height: Float) {
         wheelCenterImage.layoutParams.height = height.toInt()
@@ -757,8 +757,8 @@ class LuckyWheelView @JvmOverloads constructor(
      * @param target
      * * is index of the item to win
      * - [target] must be between 0 and wheelData last index (exclusive)
-     * - also if target a negative number then target throw IllegalArgumentException
-     * - also if target bigger than given array list last index then throw IndexOutOfBoundsException
+     * - also if target a negative number then target throw [IllegalArgumentException]
+     * - also if target bigger than given array list last index then throw [IndexOutOfBoundsException]
     */
     fun setTarget(target: Int) {
         this.target = target
@@ -787,7 +787,7 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
-     * @param rotationDirection is wheel rotate direction [RotationDirection.CLOCKWISE], [RotationDirection.COUNTER_CLOCKWISE]
+     * @param rotationDirection is wheel rotate direction [RotationDirection.CLOCKWISE], [RotationDirection.COUNTER_CLOCKWISE], default value [RotationDirection.CLOCKWISE]
      */
     fun setRotateDirection(rotationDirection: RotationDirection) {
         wheelView.setRotateDirection(rotationDirection = rotationDirection)
@@ -1034,7 +1034,7 @@ class LuckyWheelView @JvmOverloads constructor(
      * * is letter spacing of wheel items text
      * - letterSpacing must be in range `0.0F` - `1.0F`
      * - letterSpacing is not in range then letter spacing be `0.1F`
-     * - default value `1dp`
+     * - default value `0.1F`
      */
     fun setTextLetterSpacing(@FloatRange(from = 0.0, to = 1.0) letterSpacing: Float) {
         if (letterSpacing in 0.0F..1.0F) {
