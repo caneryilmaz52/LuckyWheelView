@@ -2,10 +2,22 @@ package com.caneryilmaz.apps.luckywheel.ui
 
 import android.animation.Animator
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.RadialGradient
+import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.Shader
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import androidx.annotation.FloatRange
+import com.caneryilmaz.apps.luckywheel.R
+import com.caneryilmaz.apps.luckywheel.constant.RotationDirection
 import com.caneryilmaz.apps.luckywheel.constant.RotationSpeed
 import com.caneryilmaz.apps.luckywheel.constant.RotationStatus
 import com.caneryilmaz.apps.luckywheel.constant.TextOrientation
@@ -16,64 +28,107 @@ import kotlin.math.min
 import kotlin.math.sin
 import kotlin.random.Random
 
+
 class WheelView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private lateinit var wheelItemPaint: Paint
+    private lateinit var wheelItemBackgroundPaint: Paint
+    private lateinit var wheelStrokePaint: Paint
     private lateinit var wheelItemSeparatorPaint: Paint
-    private lateinit var textPaint: Paint
+    private lateinit var wheelItemTextPaint: Paint
 
-    private lateinit var range: RectF
+    private lateinit var wheelSize: RectF
 
-    private var padding: Int = 6
-    private var radius: Int = 0
+    private var wheelRadius: Float = 0F
+    private var wheelStrokeRadius: Float = 0F
 
-    private var centerOfWheel: Int = 0
+    private var centerOfWheel: Float = 0F
 
-    private var wheelColor: Int = Color.WHITE
+    private var wheelStrokeColor: IntArray = intArrayOf(Color.BLACK)
+    private var drawWheelStroke: Boolean = false
+    private var wheelStrokeThickness: Float = 4F
 
-    private var wheelItemSeparatorColor: Int = Color.BLACK
+    private var wheelItemSeparatorColor: IntArray = intArrayOf(Color.BLACK)
     private var drawItemSeparator: Boolean = false
-    private var itemSeparatorThickness: Float = 1F
+    private var itemSeparatorThickness: Float = 2F
 
     private var drawCenterPoint: Boolean = false
     private var centerPointColor: Int = Color.WHITE
-    private var centerPointRadius: Float = 30F
+    private var centerPointRadius: Float = 40F
 
     private var wheelData: ArrayList<WheelData>
 
     private var stopCenterOfItem: Boolean = false
 
+    private var rotationDirection: RotationDirection = RotationDirection.CLOCKWISE
+
     private var rotateTime: Long = 5000
-    private var rotateSpeed: Int = RotationSpeed.NORMAL
+    private var rotateSpeed: RotationSpeed = RotationSpeed.NORMAL
     private var rotateSpeedMultiplier: Float = 1F
 
-    private var textOrientation: Int = TextOrientation.HORIZONTAL
-    private var textPadding: Int = 55
-    private var itemTextSize: Float = 44F
+    private var textOrientation: TextOrientation = TextOrientation.HORIZONTAL
+    private var textPadding: Float = resources.getDimensionPixelSize(R.dimen.dp4).toFloat()
+    private var itemTextSize: Float = resources.getDimensionPixelSize(R.dimen.sp16).toFloat()
     private var itemTextLetterSpacing: Float = 0.1F
     private var itemTextFont: Typeface = Typeface.SANS_SERIF
 
     private var iconSizeMultiplier: Float = 1.0F
-    private var iconPosition: Float = 2.0F
+    private var iconPositionFraction: Float = 0.5F
+
+    private var drawCornerPoints: Boolean = false
+    private var cornerPointsEachSlice: Int = 1
+    private var cornerPointsColor: IntArray = intArrayOf()
+    private var useRandomCornerPointsColor: Boolean = true
+    private var useCornerPointsGlowEffect: Boolean = true
+    private var cornerPointsColorChangeSpeedMs: Int = 500
+    private var cornerPointsRadius: Float = 10F
+
+    private var wheelCornerPointColors: IntArray = intArrayOf(Color.WHITE)
 
     private var wheelViewListener: WheelViewListener? = null
 
     init {
         setupPaints()
         wheelData = ArrayList()
+
+        val pointsOnCircle = wheelData.size + (wheelData.size * cornerPointsEachSlice)
+        wheelCornerPointColors = IntArray(pointsOnCircle) { Color.WHITE }
+        postDelayed(object : Runnable {
+            override fun run() {
+                if (useRandomCornerPointsColor || cornerPointsColor.isEmpty()) {
+                    wheelCornerPointColors.indices.forEach { i ->
+                        wheelCornerPointColors[i] = Color.valueOf(
+                            (0..255).random() / 255f,
+                            (0..255).random() / 255f,
+                            (0..255).random() / 255f
+                        ).toArgb()
+                    }
+                } else {
+                    wheelCornerPointColors.indices.forEach { i ->
+                        wheelCornerPointColors[i] = cornerPointsColor[cornerPointsColor.indices.random()]
+                    }
+                }
+                invalidate()
+                postDelayed(this, cornerPointsColorChangeSpeedMs.toLong())
+            }
+        }, cornerPointsColorChangeSpeedMs.toLong())
     }
 
     private fun setupPaints() {
-        range = RectF(
-            padding.toFloat(),
-            padding.toFloat(),
-            (padding + radius).toFloat(),
-            (padding + radius).toFloat()
+        wheelSize = RectF(
+            0f,
+            0f,
+            wheelRadius,
+            wheelRadius
         )
 
-        wheelItemPaint = Paint().apply {
+        wheelItemBackgroundPaint = Paint().apply {
+            isAntiAlias = true
+            isDither = true
+        }
+
+        wheelStrokePaint = Paint().apply {
             isAntiAlias = true
             isDither = true
         }
@@ -81,22 +136,20 @@ class WheelView @JvmOverloads constructor(
         wheelItemSeparatorPaint = Paint().apply {
             isAntiAlias = true
             isDither = true
-            color = wheelItemSeparatorColor
         }
 
-        textPaint = Paint().apply {
+        wheelItemTextPaint = Paint().apply {
             isAntiAlias = true
             isDither = true
             letterSpacing = itemTextLetterSpacing
             textSize = itemTextSize
             typeface = itemTextFont
+            textAlign = Paint.Align.CENTER
         }
     }
 
     /**
-     * this function set list of wheel data
-     * also if this function don't call or given list is empty then wheel view is draw only a circle
-     * @see WheelData
+     * @param wheelData is an ArrayList of [WheelData], check info for [WheelData] description
      */
     fun setWheelData(wheelData: ArrayList<WheelData>) {
         this.wheelData = wheelData
@@ -104,87 +157,110 @@ class WheelView @JvmOverloads constructor(
     }
 
     /**
-     * this function set rotation stop at center of item
-     * also if this function don't call then stop center of item be false(default)
+     * @param rotationDirection is wheel rotate direction [RotationDirection.CLOCKWISE], [RotationDirection.COUNTER_CLOCKWISE], default value [RotationDirection.CLOCKWISE]
+     */
+    fun setRotateDirection(rotationDirection: RotationDirection) {
+        this.rotationDirection = rotationDirection
+    }
+
+    /**
+     * @param stopCenterOfItem
+     * * default value `false`
+     * * if `true` the arrow points to the center of the slice
+     * - if `false` the arrow points to a random point on the slice.
      */
     fun stopCenterOfItem(stopCenterOfItem: Boolean) {
         this.stopCenterOfItem = stopCenterOfItem
     }
 
 
-    fun setRotateTime(rotateTime: Long, rotateSpeed: Int, rotateSpeedMultiplier: Float) {
+    fun setRotateTime(rotateTime: Long, rotateSpeed: RotationSpeed, rotateSpeedMultiplier: Float) {
         setRotateTime(rotateTime = rotateTime)
         setRotateSpeed(rotateSpeed = rotateSpeed)
         setRotateSpeedMultiplier(rotateSpeedMultiplier = rotateSpeedMultiplier)
     }
 
     /**
-     * this function set wheel rotate time
-     * also if this function don't call then wheel rotateTime be 5000ms(default)
+     * @param rotateTime is wheel rotate duration, default value `5000ms`
      */
     fun setRotateTime(rotateTime: Long) {
         this.rotateTime = rotateTime
     }
 
     /**
-     * this function set wheel rotate base speed
-     * also if this function don't call then wheel rotateSpeed be normal(default)
-     * @see RotationSpeed
+     * @param rotateSpeed is wheel rotate speed [RotationSpeed.FAST], [RotationSpeed.NORMAL] or [RotationSpeed.SLOW], default value [RotationSpeed.NORMAL]
      */
-    fun setRotateSpeed(rotateSpeed: Int) {
+    fun setRotateSpeed(rotateSpeed: RotationSpeed) {
         this.rotateSpeed = rotateSpeed
     }
 
     /**
-     * this function set wheel rotate speed multiplier
-     * also if this function don't call then wheel rotateSpeedMultiplier be 1F(default)
+     * @param rotateSpeedMultiplier is wheel rotate speed multiplier, default value `1F`
      */
     fun setRotateSpeedMultiplier(rotateSpeedMultiplier: Float) {
         this.rotateSpeedMultiplier = rotateSpeedMultiplier
     }
 
-    /**
-     * this function set wheel color
-     * also if this function don't call then wheel color be white(default)
-     */
-    fun setWheelColor(wheelColor: Int) {
-        this.wheelColor = wheelColor
+
+    fun drawWheelStroke(drawWheelStroke: Boolean, wheelStrokeColor: IntArray, wheelStrokeThickness: Float) {
+        drawWheelStroke(drawWheelStroke = drawWheelStroke)
+        setWheelStrokeColor(wheelStrokeColor = wheelStrokeColor)
+        setWheelStrokeThickness(wheelStrokeThickness = wheelStrokeThickness)
     }
 
     /**
-     * this function set wheel padding
-     * also if this function don't call then wheel padding be 2dp(default)
+     * @param drawWheelStroke is enable or disable wheel corner stroke drawing, default value `false`
      */
-    fun setWheelPadding(padding: Int) {
-        this.padding = padding
+    fun drawWheelStroke(drawWheelStroke: Boolean) {
+        this.drawWheelStroke = drawWheelStroke
+    }
+
+    /**
+     * @param wheelStrokeColor
+     * * * is color of stroke line
+     *  * - if [wheelStrokeColor] size = 1 then gradient stroke color disable and stroke color will be value of `wheelStrokeColor[0]`
+     *  * - if [wheelStrokeColor] size > 1 then gradient stroke color enable
+     *  * - if [wheelStrokeColor] is empty then gradient stroke color disable and stroke color will be [Color.BLACK]
+
+     */
+    fun setWheelStrokeColor(wheelStrokeColor: IntArray) {
+        this.wheelStrokeColor = wheelStrokeColor
+    }
+
+    /**
+     * @param wheelStrokeThickness is thickness of item stroke circle, default value `4dp`
+     */
+    fun setWheelStrokeThickness(wheelStrokeThickness: Float) {
+        this.wheelStrokeThickness = wheelStrokeThickness
     }
 
 
-    fun drawItemSeparator(drawItemSeparator: Boolean, wheelItemSeparatorColor: Int, itemSeparatorThickness: Float) {
+    fun drawItemSeparator(drawItemSeparator: Boolean, wheelItemSeparatorColor: IntArray, itemSeparatorThickness: Float) {
         drawItemSeparator(drawItemSeparator = drawItemSeparator)
         setWheelItemSeparatorColor(wheelItemSeparatorColor = wheelItemSeparatorColor)
         setItemSeparatorThickness(itemSeparatorThickness = itemSeparatorThickness)
     }
 
     /**
-     * this function set item separator visibility status
-     * also if this function don't call then item separator don't draw(default)
+     * @param drawItemSeparator is enable or disable wheel item separator drawing, default value `false`
      */
     fun drawItemSeparator(drawItemSeparator: Boolean) {
         this.drawItemSeparator = drawItemSeparator
     }
 
     /**
-     * this function set wheel item separator color
-     * also if this function don't call then wheel color be black(default)
+     * @param wheelItemSeparatorColor
+     * * is color of item separator line
+     * - if [wheelItemSeparatorColor] size = 1 then gradient separator color disable and separator color will be value of `wheelItemSeparatorColor[0]`
+     * - if [wheelItemSeparatorColor] size > 1 then gradient separator color enable
+     * - if [wheelItemSeparatorColor] is empty then gradient separator color disable and separator color will be [Color.BLACK]
      */
-    fun setWheelItemSeparatorColor(wheelItemSeparatorColor: Int) {
+    fun setWheelItemSeparatorColor(wheelItemSeparatorColor: IntArray) {
         this.wheelItemSeparatorColor = wheelItemSeparatorColor
     }
 
     /**
-     * this function set item separator thickness
-     * also if this function don't call then item separator thickness be 1F(default)
+     * @param itemSeparatorThickness is thickness of item separator line, default value `2dp`
      */
     fun setItemSeparatorThickness(itemSeparatorThickness: Float) {
         this.itemSeparatorThickness = itemSeparatorThickness
@@ -198,31 +274,91 @@ class WheelView @JvmOverloads constructor(
     }
 
     /**
-     * this function set center point visibility status
-     * also if this function don't call then center point don't draw(default)
+     * @param drawCenterPoint is enable or disable center point drawing, default value `false`
      */
     fun drawCenterPoint(drawCenterPoint: Boolean) {
         this.drawCenterPoint = drawCenterPoint
     }
 
     /**
-     * this function set center point color
-     * also if this function don't call then center point color be white(default)
+     * @param centerPointColor is color of center point, default value [Color.WHITE]
      */
     fun setCenterPointColor(centerPointColor: Int) {
         this.centerPointColor = centerPointColor
     }
 
     /**
-     * this function set center point radius
-     * also if this function don't call then center point radius be 30F(default)
+     * @param centerPointRadius is radius of center point,  default value `20dp`
      */
     fun setCenterPointRadius(centerPointRadius: Float) {
         this.centerPointRadius = centerPointRadius
     }
 
 
-    fun setWheelItemText(textOrientation: Int, textPadding: Int, textSize: Float, letterSpacing: Float, typeface: Typeface) {
+    fun drawCornerPoints(drawCornerPoints: Boolean, cornerPointsEachSlice: Int, useRandomCornerPointsColor: Boolean, useCornerPointsGlowEffect: Boolean, cornerPointsColorChangeSpeedMs: Int, cornerPointsColor: IntArray, cornerPointsRadius: Float) {
+        drawCornerPoints(drawCornerPoints)
+        setCornerPointsEachSlice(cornerPointsEachSlice)
+        setUseRandomCornerPointsColor(useRandomCornerPointsColor)
+        setUseCornerPointsGlowEffect(useCornerPointsGlowEffect)
+        setCornerPointsColorChangeSpeedMs(cornerPointsColorChangeSpeedMs)
+        setCornerPointsColor(cornerPointsColor)
+        setCornerPointsRadius(cornerPointsRadius)
+    }
+
+    /**
+     * @param drawCornerPoints is enable or disable corner points drawing, default value `false`
+     */
+    fun drawCornerPoints(drawCornerPoints: Boolean) {
+        this.drawCornerPoints = drawCornerPoints
+    }
+
+    /**
+     * @param cornerPointsEachSlice is count of point in a slice,  default value `1`
+     */
+    fun setCornerPointsEachSlice(cornerPointsEachSlice: Int) {
+        this.cornerPointsEachSlice = cornerPointsEachSlice
+    }
+
+    /**
+     * @param useRandomCornerPointsColor is enable or disable random corner points colors,  default value `true`
+     */
+    fun setUseRandomCornerPointsColor(useRandomCornerPointsColor: Boolean) {
+        this.useRandomCornerPointsColor = useRandomCornerPointsColor
+    }
+
+    /**
+     * @param useCornerPointsGlowEffect is enable or disable corner points glow effect, default value `true`
+     */
+    fun setUseCornerPointsGlowEffect(useCornerPointsGlowEffect: Boolean) {
+        this.useCornerPointsGlowEffect = useCornerPointsGlowEffect
+    }
+
+    /**
+     * @param cornerPointsColorChangeSpeedMs is corner points color change duration, default value `500ms`
+     */
+    fun setCornerPointsColorChangeSpeedMs(cornerPointsColorChangeSpeedMs: Int) {
+        this.cornerPointsColorChangeSpeedMs = cornerPointsColorChangeSpeedMs
+    }
+
+    /**
+     * @param cornerPointsColor
+     * * is colors of corner points
+     * - if [cornerPointsColor] is empty and [setUseRandomCornerPointsColor] is `false` then corner colors will be randomly
+     * - if [cornerPointsColor] is not empty and [setUseRandomCornerPointsColor] is `true` then corner colors will be randomly
+     */
+    fun setCornerPointsColor(cornerPointsColor: IntArray) {
+        this.cornerPointsColor = cornerPointsColor
+    }
+
+    /**
+     * @param cornerPointsRadius is radius of corner point, default value `4dp`
+     */
+    fun setCornerPointsRadius(cornerPointsRadius: Float) {
+        this.cornerPointsRadius = cornerPointsRadius
+    }
+
+
+    fun setWheelItemText(textOrientation: TextOrientation, textPadding: Float, textSize: Float, letterSpacing: Float, typeface: Typeface) {
         setTextOrientation(textOrientation = textOrientation)
         setTextPadding(textPadding = textPadding)
         setTextSize(textSize = textSize)
@@ -231,85 +367,79 @@ class WheelView @JvmOverloads constructor(
     }
 
     /**
-     * this function set item text orientation
-     * also if this function don't call then text orientation be horizontal(default)
-     * @see TextOrientation
+     * @param textOrientation is text orientation of wheel items [TextOrientation.HORIZONTAL] or [TextOrientation.VERTICAL], default value [TextOrientation.HORIZONTAL]
      */
-    fun setTextOrientation(textOrientation: Int) {
+    fun setTextOrientation(textOrientation: TextOrientation) {
         this.textOrientation = textOrientation
     }
 
     /**
-     * this function set item text padding
-     * also if this function don't call then text padding be 20dp(default)
+     * @param textPadding is text padding from wheel corner, default value `4dp`
      */
-    fun setTextPadding(textPadding: Int) {
+    fun setTextPadding(textPadding: Float) {
         this.textPadding = textPadding
     }
 
     /**
-     * this function set item text size
-     * also if this function don't call then text size be 16sp(default)
+     * @param textSize is text size of wheel items, default value `16sp`
      */
     fun setTextSize(textSize: Float) {
         itemTextSize = textSize
     }
 
     /**
-     * this function set item text letter spacing
-     * @param letterSpacing must be in range 0.0F - 1.0F
-     * @param letterSpacing is not in range then letter spacing be 1.0F
-     * also if this function don't call then text letter spacing be 0.1F(default)
+     * @param letterSpacing
+     * * is letter spacing of wheel items text
+     * - letterSpacing must be in range `0.0F` - `1.0F`
+     * - letterSpacing is not in range then letter spacing be `0.1F`
+     * - default value `0.1F`
      */
     fun setTextLetterSpacing(letterSpacing: Float) {
         itemTextLetterSpacing = letterSpacing
     }
 
     /**
-     * this function set item text font family
-     * also if this function don't call then text font family be Sans Serif(default)
+     * @param typeface is custom font typeface of wheel items text
      */
     fun setTextFont(typeface: Typeface) {
         itemTextFont = typeface
     }
 
     /**
-     * this function set item icon size multiplier
-     * also if this function don't call then icon size multiplier be 1.0F(default)
+     * @param sizeMultiplier is item icon size multiplier value, default value `1.0F` and default icon size `36dp`
      */
     fun setIconSizeMultiplier(sizeMultiplier: Float) {
         iconSizeMultiplier = sizeMultiplier
     }
 
     /**
-     * this function set item icon position
-     * also if this function don't call then icon position be 2.0F(default)
+     * @param iconPositionFraction
+     * * is icon vertical position fraction in wheel slice
+     * - The smaller the value, the closer to the center
+     * - The larger the value, the closer to the corners
+     * - default value `0.5F`
      */
-    fun setIconPosition(position: Float) {
-        iconPosition = position
+    fun setIconPositionFraction(@FloatRange(from = 0.1, to = 0.9) iconPositionFraction: Float) {
+        this.iconPositionFraction = iconPositionFraction
     }
 
     /**
      * this function set rotation listener to wheel view
      * also if this function don't call then wheel view is not notify user
-     * @see WheelViewListener
      */
     fun setWheelViewListener(wheelViewListener: WheelViewListener) {
         this.wheelViewListener = wheelViewListener
     }
 
     /**
-     * this function rotate wheel to given index
-     * @param target is index of the item to win
-     * also if target a negative number then target throw IndexOutOfBoundsException
-     * also if target bigger than wheel data size then throw IndexOutOfBoundsException
+     * this function rotate wheel to given target
      */
     fun rotateWheelToTarget(target: Int) {
 
         if (target < 0) {
-            throw IndexOutOfBoundsException("Wheel target must bigger than 0 (zero)")
+            throw IllegalArgumentException("WheelView target must be bigger than 0 (zero). Provided target: $target")
         } else if (target > wheelData.size) {
-            throw IndexOutOfBoundsException("Wheel target must smaller than wheel data size")
+            throw IndexOutOfBoundsException("WheelView target must be between 0 and wheelItems last index ${wheelData.size - 1} (exclusive). Provided target: $target")
         } else {
             val animatorListener = object : Animator.AnimatorListener {
                 override fun onAnimationStart(animation: Animator) {
@@ -333,12 +463,10 @@ class WheelView @JvmOverloads constructor(
                 }
             }
 
-            val rotation = getCenterOfWheelItem(target)
-            val rotationSpeed: Int = (rotateSpeed * rotateSpeedMultiplier).toInt()
             animate().apply {
                 interpolator = DecelerateInterpolator()
                 duration = rotateTime
-                rotation((360 * rotationSpeed) + rotation)
+                rotation(getRotationValueOfTarget(target = target))
                 setListener(animatorListener)
                 start()
             }
@@ -346,7 +474,7 @@ class WheelView @JvmOverloads constructor(
     }
 
     /**
-     * this function rotate wheel to random index
+     * this function rotate wheel to given random target
      */
     fun rotateWheelRandomTarget() {
         val randomTarget: Int = Random.nextInt(0, wheelData.size)
@@ -373,12 +501,10 @@ class WheelView @JvmOverloads constructor(
             }
         }
 
-        val rotation = getCenterOfWheelItem(randomTarget)
-        val rotationSpeed: Int = (rotateSpeed * rotateSpeedMultiplier).toInt()
         animate().apply {
             interpolator = DecelerateInterpolator()
             duration = rotateTime
-            rotation((360 * rotationSpeed) + rotation)
+            rotation(getRotationValueOfTarget(target = randomTarget))
             setListener(animatorListener)
             start()
         }
@@ -410,213 +536,409 @@ class WheelView @JvmOverloads constructor(
     }
 
     /**
-     * this function find center of a wheel item
-     * also provide arrow align to center of wheel item
+     * this function provide wheel rotate value
      */
-    private fun getCenterOfWheelItem(target: Int): Float {
+    private fun getRotationValueOfTarget(target: Int): Float {
         val sweepAngle: Float = (360 / wheelData.size).toFloat()
         val halfOfWheelItem: Float = sweepAngle / 2
         val targetItemAngle: Float = sweepAngle * (target + 1)
 
-        return if (stopCenterOfItem) {
-            270 - targetItemAngle + halfOfWheelItem
-        } else {
-            val maxRange: Int = sweepAngle.toInt() - 1
-            val stopPosition = Random.nextInt(1, maxRange)
+        val rotationSpeed = when (rotateSpeed) {
+            RotationSpeed.FAST -> 15 * rotateSpeedMultiplier
+            RotationSpeed.NORMAL -> 10 * rotateSpeedMultiplier
+            RotationSpeed.SLOW -> 5 * rotateSpeedMultiplier
+        }
 
-            270 - targetItemAngle + stopPosition
+        return when (rotationDirection) {
+            RotationDirection.CLOCKWISE -> {
+                val rotationAngleOfTarget = if (stopCenterOfItem) {
+                    270 - targetItemAngle + halfOfWheelItem
+                } else {
+                    val maxRange: Int = sweepAngle.toInt() - 1
+                    val stopPosition = Random.nextInt(1, maxRange)
+                    270 - targetItemAngle + stopPosition
+                }
+
+                (360 * rotationSpeed) + rotationAngleOfTarget
+            }
+            RotationDirection.COUNTER_CLOCKWISE -> {
+                val rotationAngleOfTarget = if (stopCenterOfItem) {
+                    -270 + targetItemAngle - halfOfWheelItem
+                } else {
+                    val maxRange: Int = sweepAngle.toInt() - 1
+                    val stopPosition = Random.nextInt(1, maxRange)
+                    -270 + targetItemAngle - stopPosition
+                }
+
+                -((360 * rotationSpeed) + rotationAngleOfTarget)
+            }
         }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
-        val width = min(measuredWidth, measuredHeight)
+        val minDimension = min(measuredWidth, measuredHeight)
 
-        radius = width - padding * 2
+        var finalWheelStrokeThickness = 0f
+        if (drawWheelStroke) {
+            finalWheelStrokeThickness = wheelStrokeThickness
 
-        centerOfWheel = width / 2
+            wheelStrokeRadius = minDimension / 2F
+        }
 
-        setMeasuredDimension(width, width)
+        wheelRadius = minDimension / 2F - finalWheelStrokeThickness
+
+        centerOfWheel = minDimension / 2F
+
+        setMeasuredDimension(minDimension, minDimension)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        setupPaints()
+
+        drawWheelStroke(canvas)
+
+        drawWheelBackground(canvas = canvas)
+
         if (wheelData.isNotEmpty()) {
-            drawWheelBackground(canvas)
-
-            setupPaints()
-
-            var startAngle = 0F
-            val sweepAngle: Float = (360 / wheelData.size).toFloat()
-
-            wheelData.forEach { item ->
-                wheelItemPaint.color = item.backgroundColor
-
-                textPaint.color = item.textColor
-
-                canvas.drawArc(range, startAngle, sweepAngle, true, wheelItemPaint)
-
-                if (drawItemSeparator) {
-                    canvas.drawArc(range, startAngle, itemSeparatorThickness, true, wheelItemSeparatorPaint)
-                }
-
-                when (textOrientation) {
-                    TextOrientation.HORIZONTAL -> {
-                        drawText(canvas, startAngle, sweepAngle, item.text)
-                    }
-                    TextOrientation.VERTICAL -> {
-                        drawTextVertically(canvas, startAngle, sweepAngle, item.text)
-                    }
-                    else -> {
-                        drawText(canvas, startAngle, sweepAngle, item.text)
-                    }
-                }
-
-                item.icon?.let { icon ->
-                    drawImage(canvas, startAngle, icon)
-                }
-
-                startAngle += sweepAngle
-            }
-        } else {
-            drawWheelBackground(canvas)
+            drawWheelItems(canvas = canvas)
+            drawItemSeparator(canvas = canvas)
         }
 
-        if (drawCenterPoint) {
-            drawCenterPoint(canvas)
+        drawCornerPoints(canvas = canvas)
+
+        drawCenterPoint(canvas = canvas)
+    }
+
+    /**
+     * this function is draw a wheel items with given wheelData list
+     * if wheelData list is empty then wheel items are not drawn
+     */
+    private fun drawWheelItems(canvas: Canvas) {
+        var startAngle = 0F
+        val sweepAngle: Float = 360F / wheelData.size
+
+        wheelData.forEach { item ->
+            val wheelBackgroundShader = if (item.backgroundColor.size == 1) {
+                RadialGradient(
+                    centerOfWheel,
+                    centerOfWheel,
+                    wheelRadius,
+                    intArrayOf(item.backgroundColor[0], item.backgroundColor[0]),
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+            } else if (item.backgroundColor.isEmpty()) {
+                throw IllegalArgumentException("At least one color value is required: backgroundColor array is empty.")
+            } else {
+                RadialGradient(
+                    centerOfWheel,
+                    centerOfWheel,
+                    wheelRadius,
+                    item.backgroundColor,
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+            }
+            wheelItemBackgroundPaint.shader = wheelBackgroundShader
+
+            val itemArc = RectF(
+                centerOfWheel - wheelRadius,
+                centerOfWheel - wheelRadius,
+                centerOfWheel + wheelRadius,
+                centerOfWheel + wheelRadius,
+            )
+
+            canvas.drawArc(itemArc, startAngle, sweepAngle, true, wheelItemBackgroundPaint)
+
+            val itemTextTypeface = if (item.textFontTypeface == null) {
+                itemTextFont
+            } else {
+                item.textFontTypeface
+            }
+
+            val adjustedRadius = (wheelRadius - wheelItemTextPaint.textSize - textPadding)
+
+            val textRectF = RectF(
+                centerOfWheel - adjustedRadius,
+                centerOfWheel - adjustedRadius,
+                centerOfWheel + adjustedRadius,
+                centerOfWheel + adjustedRadius,
+            )
+
+            val path = Path().apply {
+                addArc(textRectF, startAngle, sweepAngle)
+            }
+
+            val bounds = RectF()
+            path.computeBounds(bounds, true)
+
+            val textPaintShader = if (item.textColor.size == 1) {
+                LinearGradient(
+                    bounds.left,
+                    bounds.left,
+                    bounds.right,
+                    bounds.right,
+                    intArrayOf(item.textColor[0], item.textColor[0]),
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+            } else if (item.textColor.isEmpty()) {
+                throw IllegalArgumentException("At least one color value is required: textColor list is empty.")
+            } else {
+                LinearGradient(
+                    bounds.left,
+                    bounds.left,
+                    bounds.right,
+                    bounds.right,
+                    item.textColor,
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+            }
+            wheelItemTextPaint.apply {
+                typeface = itemTextTypeface
+                shader = textPaintShader
+            }
+
+            when (textOrientation) {
+                TextOrientation.HORIZONTAL -> {
+                    val separatedText = item.text.split("\n")
+
+                    val horizontalOffset = (((wheelRadius * Math.PI) / wheelRadius)).toFloat()
+                    val verticalOffset = ((wheelRadius / 2 / 3) - 75)
+
+                    if (separatedText.size > 1) {
+                        separatedText.forEachIndexed { lineIndex, lineText ->
+                            canvas.drawTextOnPath(
+                                lineText,
+                                path,
+                                horizontalOffset,
+                                verticalOffset + ((wheelItemTextPaint.textSize + wheelItemTextPaint.letterSpacing) * lineIndex),
+                                wheelItemTextPaint
+                            )
+                        }
+                    } else {
+                        canvas.drawTextOnPath(
+                            item.text,
+                            path,
+                            horizontalOffset,
+                            verticalOffset,
+                            wheelItemTextPaint
+                        )
+                    }
+                }
+                TextOrientation.VERTICAL -> {
+                    val textArray = item.text.toCharArray()
+
+                    val horizontalOffset = (((wheelRadius * Math.PI) / wheelRadius)).toFloat()
+                    val verticalOffset = ((wheelRadius / 2 / 3) - 75)
+
+                    textArray.forEachIndexed { index, char ->
+                        canvas.drawTextOnPath(
+                            char.toString(),
+                            path,
+                            horizontalOffset,
+                            verticalOffset + (index * wheelItemTextPaint.textSize),
+                            wheelItemTextPaint
+                        )
+                    }
+                }
+            }
+
+            item.icon?.let { icon ->
+                val imgWidth: Int = (resources.getDimensionPixelSize(R.dimen.dp36) * iconSizeMultiplier).toInt()
+                val angle = sweepAngle * wheelData.indexOf(item) + sweepAngle / 2
+                val radians = Math.toRadians(angle.toDouble())
+
+                val sliceCenterX = (centerOfWheel + (wheelRadius * iconPositionFraction) * cos(radians)).toFloat()
+                val sliceCenterY = (centerOfWheel + (wheelRadius * iconPositionFraction) * sin(radians)).toFloat()
+
+                val rect = Rect(
+                    (sliceCenterX - imgWidth / 2).toInt(),
+                    (sliceCenterY - imgWidth / 2).toInt(),
+                    (sliceCenterX + imgWidth / 2).toInt(),
+                    (sliceCenterY + imgWidth / 2).toInt()
+                )
+
+                canvas.drawBitmap(icon, null, rect, null)
+            }
+
+            startAngle += sweepAngle
+        }
+    }
+
+    /**
+     * this function is draw a wheel stroke with given stroke color
+     * if wheel stroke color is not given then wheel stroke color be black(default)
+     */
+    private fun drawWheelStroke(canvas: Canvas) {
+        if (drawWheelStroke) {
+            val wheelStrokeShader = if (wheelStrokeColor.size == 1) {
+                LinearGradient(
+                    0F,
+                    0F,
+                    wheelStrokeRadius,
+                    wheelStrokeRadius,
+                    intArrayOf(wheelStrokeColor[0], wheelStrokeColor[0]),
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+            } else if (wheelStrokeColor.isEmpty()) {
+                LinearGradient(
+                    0F,
+                    0F,
+                    wheelStrokeRadius,
+                    wheelStrokeRadius,
+                    intArrayOf(Color.BLACK, Color.BLACK),
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+            } else {
+                LinearGradient(
+                    0F,
+                    0F,
+                    wheelStrokeRadius,
+                    wheelStrokeRadius,
+                    wheelStrokeColor,
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+            }
+
+            wheelStrokePaint.shader = wheelStrokeShader
+            canvas.drawCircle(centerOfWheel, centerOfWheel, wheelStrokeRadius, wheelStrokePaint)
         }
     }
 
     /**
      * this function is draw a wheel with given wheel color
-     * if wheel color is not given then wheel color be white(default)
+     * if wheel color is not given then wheel color be black(default)
      */
-    private fun drawWheelBackground(canvas: Canvas?) {
-        val paint = Paint().apply {
+    private fun drawWheelBackground(canvas: Canvas) {
+        val wheelBackgroundPaint = Paint().apply {
             isAntiAlias = true
             isDither = true
-            color = wheelColor
+            color = Color.BLACK
         }
 
-        canvas?.drawCircle(
-            centerOfWheel.toFloat(), centerOfWheel.toFloat(), centerOfWheel.toFloat(), paint
+        canvas.drawCircle(
+            centerOfWheel, centerOfWheel, wheelRadius, wheelBackgroundPaint
         )
     }
 
     /**
-     * this function is draw wheel item text with given wheel data item text
-     * @param startAngle is wheel item index start angle in wheel
-     * @param sweepAngle is wheel item angle(wheel item width)
+     * this function is draw a wheel item separator with given color
+     * if wheel item separator color is not given then wheel stroke color be black(default)
      */
-    private fun drawText(canvas: Canvas?, startAngle: Float, sweepAngle: Float, text: String) {
+    private fun drawItemSeparator(canvas: Canvas) {
+        if (drawItemSeparator) {
+            val itemSeparatorShader = if (wheelItemSeparatorColor.size == 1) {
+                RadialGradient(
+                    centerOfWheel,
+                    centerOfWheel,
+                    wheelRadius,
+                    intArrayOf(wheelItemSeparatorColor[0], wheelItemSeparatorColor[0]),
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+            } else if (wheelItemSeparatorColor.isEmpty()) {
+                RadialGradient(
+                    centerOfWheel,
+                    centerOfWheel,
+                    wheelRadius,
+                    intArrayOf(Color.BLACK, Color.BLACK),
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+            } else {
+                RadialGradient(
+                    centerOfWheel,
+                    centerOfWheel,
+                    wheelRadius,
+                    wheelItemSeparatorColor,
+                    null,
+                    Shader.TileMode.CLAMP
+                )
+            }
+            wheelItemSeparatorPaint.shader = itemSeparatorShader
+            wheelItemSeparatorPaint.strokeWidth = itemSeparatorThickness
 
-        textPaint.apply {
-            textSize = itemTextSize
-            typeface = itemTextFont
-            letterSpacing = itemTextLetterSpacing
+            wheelData.forEachIndexed { index, _ ->
+                val angle = index * (360F / wheelData.size)
+                val radians = Math.toRadians(angle.toDouble())
+                val endX = centerOfWheel + wheelRadius * cos(radians).toFloat()
+                val endY = centerOfWheel + wheelRadius * sin(radians).toFloat()
+                canvas.drawLine(centerOfWheel, centerOfWheel, endX, endY, wheelItemSeparatorPaint)
+            }
         }
-
-        val path = Path().apply {
-            addArc(range, startAngle, sweepAngle)
-        }
-
-        if (text.contains("\n")) {
-            val separatedText = text.split("\n")
-
-            val textMeasure = textPaint.measureText(separatedText[0]) / 2
-
-            val horizontalOffset: Float = (((radius * Math.PI) / wheelData.size / 2) - textMeasure).toFloat()
-            val verticalOffset: Float = ((radius / 2 / 3) - 75).toFloat()
-
-            canvas?.drawTextOnPath(
-                separatedText[0], path, horizontalOffset, verticalOffset, textPaint
-            )
-
-            canvas?.drawTextOnPath(
-                separatedText[1], path, horizontalOffset, verticalOffset + itemTextSize, textPaint
-            )
-
-        } else {
-            val textMeasure = textPaint.measureText(text) / 2
-
-            val horizontalOffset: Float = (((radius * Math.PI) / wheelData.size / 2) - textMeasure).toFloat()
-            val verticalOffset: Float = ((radius / 2 / 3) - 70).toFloat()
-
-            canvas?.drawTextOnPath(text, path, horizontalOffset, verticalOffset, textPaint)
-        }
-    }
-
-    /**
-     * this function is draw wheel item text with given wheel data item text
-     * @param startAngle is wheel item index start angle in wheel
-     * @param sweepAngle is wheel item angle(wheel item width)
-     */
-    private fun drawTextVertically(canvas: Canvas?, startAngle: Float, sweepAngle: Float, text: String) {
-
-        textPaint.apply {
-            textSize = itemTextSize
-            typeface = itemTextFont
-            letterSpacing = itemTextLetterSpacing
-        }
-
-        val path = Path().apply {
-            addArc(range, startAngle, sweepAngle)
-        }
-
-        val textArray = text.toCharArray()
-
-        val horizontalOffset: Float = (((radius * Math.PI) / wheelData.size / 2) - 10).toFloat()
-        val verticalOffset: Float = ((radius / 2 / 3) - textPadding).toFloat()
-
-        textArray.forEach { char ->
-            val index = textArray.indexOf(char)
-
-            canvas?.drawTextOnPath(
-                char.toString(),
-                path,
-                horizontalOffset,
-                verticalOffset + (index * itemTextSize),
-                textPaint
-            )
-        }
-    }
-
-    /**
-     * this function is draw wheel item icon with given wheel data item icon
-     * @param startAngle is wheel item index start angle in wheel
-     */
-    private fun drawImage(canvas: Canvas, startAngle: Float, bitmap: Bitmap) {
-        val imgWidth: Int = ((radius / wheelData.size) * iconSizeMultiplier).toInt()
-
-        val angle = ((startAngle + 360f / wheelData.size / 2) * Math.PI / 180)
-
-        val horizontalOffset = (centerOfWheel + radius / 2 / iconPosition * cos(angle))
-        val verticalOffset = (centerOfWheel + radius / 2 / iconPosition * sin(angle))
-
-        val rect = Rect(
-            (horizontalOffset - imgWidth / 2).toInt(),
-            (verticalOffset - imgWidth / 2).toInt(),
-            (horizontalOffset + imgWidth / 2).toInt(),
-            (verticalOffset + imgWidth / 2).toInt()
-        )
-        canvas.drawBitmap(bitmap, null, rect, null)
     }
 
     /**
      * this function is draw a small point with given color
      * if point color is not given then point color be white(default)
      */
-    private fun drawCenterPoint(canvas: Canvas?) {
-        val paint = Paint().apply {
-            isAntiAlias = true
-            isDither = true
-            color = centerPointColor
-        }
+    private fun drawCenterPoint(canvas: Canvas) {
+        if (drawCenterPoint) {
+            val paint = Paint().apply {
+                isAntiAlias = true
+                isDither = true
+                color = centerPointColor
+            }
 
-        canvas?.drawCircle(
-            centerOfWheel.toFloat(), centerOfWheel.toFloat(), centerPointRadius, paint
-        )
+            canvas.drawCircle(centerOfWheel, centerOfWheel, centerPointRadius, paint)
+        }
+    }
+
+    /**
+     * this function is draw a small points around wheel corners with given color
+     */
+    private fun drawCornerPoints(canvas: Canvas) {
+        if (drawCornerPoints) {
+            if (wheelCornerPointColors.isEmpty()) {
+                val pointsOnCircle = wheelData.size + (wheelData.size * cornerPointsEachSlice)
+                wheelCornerPointColors = IntArray(pointsOnCircle) { Color.WHITE }
+            }
+
+            var finalWheelStrokeThickness = 0f
+            if (drawWheelStroke) {
+                finalWheelStrokeThickness = wheelStrokeThickness
+            }
+            val minDimension = min(measuredWidth, measuredHeight)
+
+            val wheelPointsRadius = if (finalWheelStrokeThickness == 0F) {
+                (minDimension / 2F - (finalWheelStrokeThickness / 2)) - (cornerPointsRadius * 2)
+            } else {
+                minDimension / 2F - (finalWheelStrokeThickness / 2)
+            }
+
+            val pointsOnCircle = wheelData.size + (wheelData.size * cornerPointsEachSlice)
+            val angleStep = (2 * Math.PI / pointsOnCircle).toFloat()
+
+            val cornerPointsPaint = Paint().apply {
+                isAntiAlias = true
+                isDither = true
+            }
+
+            for (i in 0 until pointsOnCircle) {
+                val angle = i * angleStep
+                val pointX = centerOfWheel + wheelPointsRadius * cos(angle)
+                val pointY = centerOfWheel + wheelPointsRadius * sin(angle)
+
+                if (useCornerPointsGlowEffect) {
+                    cornerPointsPaint.color = wheelCornerPointColors[i]
+                    cornerPointsPaint.alpha = 77
+
+                    canvas.drawCircle(pointX, pointY, cornerPointsRadius * 1.5F, cornerPointsPaint)
+                }
+
+                cornerPointsPaint.color = wheelCornerPointColors[i]
+                cornerPointsPaint.alpha = 255
+                canvas.drawCircle(pointX, pointY, cornerPointsRadius, cornerPointsPaint)
+            }
+        }
     }
 }

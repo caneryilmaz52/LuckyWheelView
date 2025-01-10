@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
     android:padding="5dp">
 
     <RelativeLayout
-        android:id="@+id/wheelViewRoot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/ivTopArrow"
@@ -37,7 +35,8 @@
             android:layout_alignTop="@id/wheelView"
             android:layout_alignBottom="@id/wheelView"
             android:layout_centerHorizontal="true"
-            android:visibility="gone" />
+            android:src="@drawable/ic_center_arrow"
+            android:visibility="visible" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/ivCenterText"

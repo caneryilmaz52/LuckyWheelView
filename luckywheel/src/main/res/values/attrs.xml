@@ -3,15 +3,6 @@
 
     <declare-styleable name="LuckyWheelView">
 
-        <attr name="rootLayoutBackgroundDrawable" format="reference" />
-        <attr name="rootLayoutBackgroundColor" format="color" />
-
-        <attr name="rootLayoutPadding" format="dimension" />
-        <attr name="rootLayoutPaddingLeft" format="dimension" />
-        <attr name="rootLayoutPaddingTop" format="dimension" />
-        <attr name="rootLayoutPaddingRight" format="dimension" />
-        <attr name="rootLayoutPaddingBottom" format="dimension" />
-
         <attr name="arrowPosition" format="enum">
             <enum name="TOP" value="1" />
             <enum name="CENTER" value="2" />
@@ -19,7 +10,7 @@
 
         <attr name="arrowAnimationEnable" format="boolean" />
         <attr name="arrowSwingDuration" format="integer" />
-        <attr name="arrowSwingDistance" format="integer" />
+        <attr name="arrowSwingDistance" format="float" />
         <attr name="arrowSwingSlowdownMultiplier" format="float" />
 
         <attr name="wheelTopArrow" format="reference" />
@@ -44,6 +35,11 @@
         <attr name="wheelCenterTextSize" format="dimension" />
         <attr name="wheelCenterTextFont" format="reference" />
 
+        <attr name="rotateDirection" format="enum">
+            <enum name="CLOCKWISE" value="1" />
+            <enum name="COUNTER_CLOCKWISE" value="2" />
+        </attr>
+        
         <attr name="rotationViaSwipe" format="boolean" />
         <attr name="swipeDistance" format="integer" />
 
@@ -57,30 +53,37 @@
         </attr>
         <attr name="rotateSpeedMultiplier" format="float" />
 
-        <attr name="wheelColor" format="color" />
-        <attr name="wheelPadding" format="dimension" />
+        <attr name="drawWheelStroke" format="boolean" />
+        <attr name="wheelStrokeColor" format="color" />
+        <attr name="wheelStrokeThickness" format="dimension" />
 
         <attr name="drawItemSeparator" format="boolean" />
         <attr name="wheelItemSeparatorColor" format="color" />
-        <attr name="itemSeparatorThickness" format="float" />
+        <attr name="itemSeparatorThickness" format="dimension" />
 
         <attr name="drawCenterPoint" format="boolean" />
         <attr name="centerPointColor" format="color" />
-        <attr name="centerPointRadius" format="float" />
+        <attr name="centerPointRadius" format="dimension" />
+
+        <attr name="drawCornerPoints" format="boolean" />
+        <attr name="cornerPointsEachSlice" format="integer" />
+        <attr name="cornerPointsColor" format="color" />
+        <attr name="useRandomCornerPointsColor" format="boolean" />
+        <attr name="useCornerPointsGlowEffect" format="boolean" />
+        <attr name="cornerPointsColorChangeSpeedMs" format="integer" />
+        <attr name="cornerPointsRadius" format="dimension" />
 
         <attr name="textOrientation" format="enum">
             <enum name="HORIZONTAL" value="1" />
             <enum name="VERTICAL" value="2" />
         </attr>
-        <attr name="textPadding" format="integer" />
-        <attr name="textSize" format="integer" />
+        <attr name="textPadding" format="dimension" />
+        <attr name="textSize" format="dimension" />
         <attr name="letterSpacing" format="float" />
         <attr name="textFont" format="reference" />
 
         <attr name="iconPosition" format="float" />
         <attr name="iconSizeMultiplier" format="float" />
-
-        <attr name="enableVibration" format="boolean" />
 
     </declare-styleable>
 </resources>
