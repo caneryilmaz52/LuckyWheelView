@@ -67,8 +67,7 @@ Use the `Lucky Wheel View` to get started.
 ## Jetpack Compose
 
 `Lucky Wheel View` has Jetpack Compose support. Check
-<a href="https://github.com/caneryilmaz52/LuckyWheelViewCompose">Lucky Wheel View Compose</a> to
-use.
+<a href="https://github.com/caneryilmaz52/LuckyWheelViewCompose">Lucky Wheel View Compose</a> to use.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -127,15 +126,13 @@ Populate a list of `WheelData`
 
 `textColor` is color of item text
 
-- if `textColor` size = 1 then gradient text color disable and text color will be value of
-  `textColor[0]`
+- if `textColor` size = 1 then gradient text color disable and text color will be value of `textColor[0]`
 - if `textColor` size > 1 then gradient text color enable
 - if `textColor` is empty then wheel view is not drawn
 
 `backgroundColor` is background color of item
 
-- if `backgroundColor` size = 1 then gradient background color disable and background color will be
-  value of `backgroundColor[0]`
+- if `backgroundColor` size = 1 then gradient background color disable and background color will be value of `backgroundColor[0]`
 - if `backgroundColor` size > 1 then gradient background color enable
 - if `backgroundColor` is empty then wheel view is not drawn
 
