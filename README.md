@@ -20,8 +20,8 @@
   </br>
   <ol>
     <li><a href="#about-the-project">About The Project</a></li>
-    <li><a href="#installation">Installation</a></li>
     <li><a href="#jetpack-compose">Jetpack Compose</a></li>
+    <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#examples">Examples</a></li>
     <li><a href="#customization">Customization</a></li>
