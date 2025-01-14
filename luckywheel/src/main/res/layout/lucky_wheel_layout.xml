@@ -35,8 +35,7 @@
             android:layout_alignTop="@id/wheelView"
             android:layout_alignBottom="@id/wheelView"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_center_arrow"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/ivCenterText"
