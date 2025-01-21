@@ -19,6 +19,9 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.toBitmap
 import com.caneryilmaz.apps.luckywheel.R
 import com.caneryilmaz.apps.luckywheel.constant.ArrowPosition
 import com.caneryilmaz.apps.luckywheel.constant.RotationDirection
@@ -26,8 +29,8 @@ import com.caneryilmaz.apps.luckywheel.constant.RotationSpeed
 import com.caneryilmaz.apps.luckywheel.constant.RotationStatus
 import com.caneryilmaz.apps.luckywheel.constant.TextOrientation
 import com.caneryilmaz.apps.luckywheel.data.WheelData
-import com.caneryilmaz.apps.luckywheel.listener.RotationStatusListener
 import com.caneryilmaz.apps.luckywheel.listener.RotationCompleteListener
+import com.caneryilmaz.apps.luckywheel.listener.RotationStatusListener
 import com.caneryilmaz.apps.luckywheel.listener.WheelViewListener
 import kotlin.math.abs
 
@@ -357,14 +360,14 @@ class LuckyWheelView @JvmOverloads constructor(
 
         when (arrowPosition) {
             ArrowPosition.TOP -> {
-                wheelCenterArrow.visibility = View.GONE
+                wheelCenterArrow.visibility = GONE
 
-                wheelTopArrow.visibility = View.VISIBLE
+                wheelTopArrow.visibility = VISIBLE
             }
             ArrowPosition.CENTER -> {
-                wheelCenterArrow.visibility = View.VISIBLE
+                wheelCenterArrow.visibility = VISIBLE
 
-                wheelTopArrow.visibility = View.GONE
+                wheelTopArrow.visibility = GONE
             }
         }
     }
@@ -666,7 +669,7 @@ class LuckyWheelView @JvmOverloads constructor(
      * @param wheelCenterText is center text value
      */
     fun setWheelCenterText(wheelCenterText: String) {
-        wheelCenterTextView.visibility = View.VISIBLE
+        wheelCenterTextView.visibility = VISIBLE
         wheelCenterTextView.text = wheelCenterText
     }
 
@@ -749,7 +752,51 @@ class LuckyWheelView @JvmOverloads constructor(
      * @param wheelData is an ArrayList of [WheelData], check info for [WheelData] description
      */
     fun setWheelData(wheelData: ArrayList<WheelData>) {
-        wheelView.setWheelData(wheelData = wheelData)
+        val urlIconPairs = ArrayList<Pair<Int, WheelData>>()
+
+        wheelData.forEachIndexed { index, item ->
+            item.iconURL?.let {
+                urlIconPairs.add(Pair(index, item))
+            }
+        }
+
+        if (urlIconPairs.isEmpty()) {
+            wheelView.setWheelData(wheelData = wheelData)
+        } else {
+            val itemList = ArrayList<WheelData>()
+            itemList.addAll(wheelData)
+
+            wheelView.setWheelData(wheelData = itemList)
+
+            urlIconPairs.forEach { pair ->
+                val request = ImageRequest.Builder(context)
+                    .data(pair.second.iconURL)
+                    .target(
+                        onSuccess = { result ->
+                            val newItem = WheelData(
+                                text = pair.second.text,
+                                textColor = pair.second.textColor,
+                                backgroundColor = pair.second.backgroundColor,
+                                textFontTypeface = pair.second.textFontTypeface,
+                                icon = result.toBitmap()
+                            )
+                            itemList[pair.first] = newItem
+                            wheelView.setWheelData(wheelData = itemList)
+                        },
+                        onError = { error ->
+                            val newItem = WheelData(
+                                text = pair.second.text,
+                                textColor = pair.second.textColor,
+                                backgroundColor = pair.second.backgroundColor,
+                                textFontTypeface = pair.second.textFontTypeface
+                            )
+                            itemList[pair.first] = newItem
+                            wheelView.setWheelData(wheelData = itemList)
+                        }).build()
+
+                context.imageLoader.enqueue(request)
+            }
+        }
     }
 
 

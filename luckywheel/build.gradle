@@ -45,6 +45,9 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
+
+    implementation(libs.coil)
+    implementation(libs.coil.network.okhttp)
 }
 
 afterEvaluate {
@@ -54,7 +57,7 @@ afterEvaluate {
                 from components.release
                 groupId = "com.github.caneryilmaz52"
                 artifactId = "LuckyWheelView"
-                version = "1.1.1"
+                version = "1.1.2"
 
                 pom {
                     name.set("Lucky Wheel View")
