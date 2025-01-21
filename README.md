@@ -20,7 +20,7 @@
   </br>
   <ol>
     <li><a href="#about-the-project">About The Project</a></li>
-    <li><a href="#jetpack-compose">Jetpack Compose</a></li>
+    <li><a href="#compose-ui">Compose UI</a></li>
     <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#examples">Examples</a></li>
@@ -51,7 +51,8 @@ Here's why:
 * Almost all events can listenable
 * Random or specific target can be set
 * Clockwise and counterclockwise rotate direction support
-* XML and Jetpack Compose support
+* Icon load from URL support with Coil
+* Android Views and Compose UI support
 
 Of course, your needs may be different. So I'll be adding more in the near future. You may also
 suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all
@@ -62,11 +63,11 @@ Use the `Lucky Wheel View` to get started.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-<!-- JETPACK COMPOSE -->
+<!-- COMPOSE UI -->
 
-## Jetpack Compose
+## Compose UI
 
-`Lucky Wheel View` has Jetpack Compose support. Check
+`Lucky Wheel View` has Compose UI support. Check
 <a href="https://github.com/caneryilmaz52/LuckyWheelViewCompose">Lucky Wheel View Compose</a> to use.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -140,6 +141,12 @@ Populate a list of `WheelData`
 
 `icon` is item icon `Bitmap`, if not null then icon will be drawn
 
+`iconURL` is item icon URL, if not null then icon will be drawn
+
+- use only one of `icon` and `iconURL`
+- if both are used, `iconURL` takes priority
+- recommended to use PNG format icon
+
 ```kotlin
 val wheelData = ArrayList<WheelData>()
 val item = WheelData(
@@ -147,7 +154,8 @@ val item = WheelData(
     textColor = intArrayOf(textColor),
     backgroundColor = intArrayOf(backgroundColor),
     textFontTypeface = itemTextFontTypeface,  //optional
-    icon = itemIconBitmap //optional
+    icon = itemIconBitmap, //optional
+    iconURL = itemIconUrl //optional
 )
 wheelData.add(item)
 ```
