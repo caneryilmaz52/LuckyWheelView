@@ -1252,8 +1252,8 @@ class LuckyWheelView @JvmOverloads constructor(
      * this function is not for user
      */
     private fun clearArrowAnimation() {
-        arrowRightSwingAnimator!!.cancel()
-        arrowLeftSwingAnimator!!.cancel()
+        arrowRightSwingAnimator?.cancel()
+        arrowLeftSwingAnimator?.cancel()
 
         val arrowCenterPositionAnimator = when (arrowPosition) {
             ArrowPosition.TOP -> {
