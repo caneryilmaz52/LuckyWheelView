@@ -310,6 +310,12 @@ class LuckyWheelView @JvmOverloads constructor(
                 2 -> {
                     setTextOrientation(textOrientation = TextOrientation.VERTICAL)
                 }
+                3 -> {
+                    setTextOrientation(textOrientation = TextOrientation.VERTICAL_TO_CENTER)
+                }
+                4 -> {
+                    setTextOrientation(textOrientation = TextOrientation.VERTICAL_TO_CORNER)
+                }
                 else -> {
                     setTextOrientation(textOrientation = TextOrientation.HORIZONTAL)
                 }
@@ -330,6 +336,10 @@ class LuckyWheelView @JvmOverloads constructor(
 
         typedArray.getFont(R.styleable.LuckyWheelView_textFont)?.let { font ->
             setTextFont(typeface = font)
+        }
+
+        typedArray.getFloat(R.styleable.LuckyWheelView_textPositionFraction, 0.7F).let { textPositionFraction ->
+            setTextPositionFraction(textPositionFraction = textPositionFraction)
         }
 
         typedArray.getFloat(R.styleable.LuckyWheelView_iconSizeMultiplier, 1.0F).let { sizeMultiplier ->
@@ -1056,7 +1066,7 @@ class LuckyWheelView @JvmOverloads constructor(
     }
 
     /**
-     * @param textOrientation is text orientation of wheel items [TextOrientation.HORIZONTAL] or [TextOrientation.VERTICAL], default value [TextOrientation.HORIZONTAL]
+     * @param textOrientation is text orientation of wheel items [TextOrientation.HORIZONTAL], [TextOrientation.VERTICAL], [TextOrientation.VERTICAL_TO_CENTER] or [TextOrientation.VERTICAL_TO_CORNER] default value [TextOrientation.HORIZONTAL]
      */
     fun setTextOrientation(textOrientation: TextOrientation) {
         wheelView.setTextOrientation(textOrientation = textOrientation)
@@ -1104,6 +1114,17 @@ class LuckyWheelView @JvmOverloads constructor(
      */
     fun setTextFont(typeface: Typeface) {
         wheelView.setTextFont(typeface = typeface)
+    }
+
+    /**
+     * @param textPositionFraction
+     * * is text vertical position fraction in wheel slice only effect when [TextOrientation] is [TextOrientation.VERTICAL_TO_CENTER] or [TextOrientation.VERTICAL_TO_CORNER]
+     * - The smaller the value, the closer to the center
+     * - The larger the value, the closer to the corners
+     * - default value `0.7F`
+     */
+    fun setTextPositionFraction(@FloatRange(from = 0.1, to = 0.9) textPositionFraction: Float) {
+        wheelView.setTextPositionFraction(textPositionFraction = textPositionFraction)
     }
 
     /**
