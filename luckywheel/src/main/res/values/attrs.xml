@@ -76,11 +76,14 @@
         <attr name="textOrientation" format="enum">
             <enum name="HORIZONTAL" value="1" />
             <enum name="VERTICAL" value="2" />
+            <enum name="VERTICAL_TO_CENTER" value="3" />
+            <enum name="VERTICAL_TO_CORNER" value="4" />
         </attr>
         <attr name="textPadding" format="dimension" />
         <attr name="textSize" format="dimension" />
         <attr name="letterSpacing" format="float" />
         <attr name="textFont" format="reference" />
+        <attr name="textPositionFraction" format="float" />
 
         <attr name="iconPosition" format="float" />
         <attr name="iconSizeMultiplier" format="float" />

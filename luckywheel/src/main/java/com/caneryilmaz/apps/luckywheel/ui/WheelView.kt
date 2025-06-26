@@ -27,9 +27,10 @@ import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 import kotlin.random.Random
+import androidx.core.graphics.withSave
 
 
-class WheelView @JvmOverloads constructor(
+internal class WheelView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
@@ -72,6 +73,7 @@ class WheelView @JvmOverloads constructor(
     private var itemTextSize: Float = resources.getDimensionPixelSize(R.dimen.sp16).toFloat()
     private var itemTextLetterSpacing: Float = 0.1F
     private var itemTextFont: Typeface = Typeface.SANS_SERIF
+    private var textPositionFraction: Float = 0.7F
 
     private var iconSizeMultiplier: Float = 1.0F
     private var iconPositionFraction: Float = 0.5F
@@ -367,7 +369,7 @@ class WheelView @JvmOverloads constructor(
     }
 
     /**
-     * @param textOrientation is text orientation of wheel items [TextOrientation.HORIZONTAL] or [TextOrientation.VERTICAL], default value [TextOrientation.HORIZONTAL]
+     * @param textOrientation is text orientation of wheel items [TextOrientation.HORIZONTAL], [TextOrientation.VERTICAL], [TextOrientation.VERTICAL_TO_CENTER] or [TextOrientation.VERTICAL_TO_CORNER] default value [TextOrientation.HORIZONTAL]
      */
     fun setTextOrientation(textOrientation: TextOrientation) {
         this.textOrientation = textOrientation
@@ -403,6 +405,17 @@ class WheelView @JvmOverloads constructor(
      */
     fun setTextFont(typeface: Typeface) {
         itemTextFont = typeface
+    }
+
+    /**
+     * @param textPositionFraction
+     * * is text vertical position fraction in wheel slice only effect when [TextOrientation] is [TextOrientation.VERTICAL_TO_CENTER] or [TextOrientation.VERTICAL_TO_CORNER]
+     * - The smaller the value, the closer to the center
+     * - The larger the value, the closer to the corners
+     * - default value `0.7F`
+     */
+    fun setTextPositionFraction(@FloatRange(from = 0.1, to = 0.9) textPositionFraction: Float) {
+        this.textPositionFraction = textPositionFraction
     }
 
     /**
@@ -745,6 +758,36 @@ class WheelView @JvmOverloads constructor(
                             verticalOffset + (index * wheelItemTextPaint.textSize),
                             wheelItemTextPaint
                         )
+                    }
+                }
+                TextOrientation.VERTICAL_TO_CENTER -> {
+                    val middleAngle = startAngle + sweepAngle / 2
+                    val middleAngleRad = Math.toRadians(middleAngle.toDouble()).toFloat()
+                    val textRadius = wheelRadius * textPositionFraction
+
+                    val x = centerOfWheel + textRadius * cos(middleAngleRad)
+                    val y = centerOfWheel + textRadius * sin(middleAngleRad)
+
+                    canvas.withSave {
+                        val rotationAngle = middleAngle + 180
+
+                        rotate(rotationAngle, x, y)
+
+                        drawText(item.text, x, y + (wheelItemTextPaint.textSize / 3), wheelItemTextPaint)
+                    }
+                }
+                TextOrientation.VERTICAL_TO_CORNER -> {
+                    val middleAngle = startAngle + sweepAngle / 2
+                    val middleAngleRad = Math.toRadians(middleAngle.toDouble()).toFloat()
+                    val textRadius = wheelRadius * textPositionFraction
+
+                    val x = centerOfWheel + textRadius * cos(middleAngleRad)
+                    val y = centerOfWheel + textRadius * sin(middleAngleRad)
+
+                    canvas.withSave {
+                        rotate(middleAngle, x, y)
+
+                        drawText(item.text, x, y + (wheelItemTextPaint.textSize / 3), wheelItemTextPaint)
                     }
                 }
             }
