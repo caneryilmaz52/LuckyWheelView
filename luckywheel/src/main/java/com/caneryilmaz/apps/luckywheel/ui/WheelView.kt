@@ -552,7 +552,7 @@ internal class WheelView @JvmOverloads constructor(
      * this function provide wheel rotate value
      */
     private fun getRotationValueOfTarget(target: Int): Float {
-        val sweepAngle: Float = (360 / wheelData.size).toFloat()
+        val sweepAngle: Float = (360 / wheelData.size.toFloat())
         val halfOfWheelItem: Float = sweepAngle / 2
         val targetItemAngle: Float = sweepAngle * (target + 1)
 
