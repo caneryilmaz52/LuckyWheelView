@@ -1,7 +1,6 @@
 package com.caneryilmaz.apps.luckywheelview
 
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -13,6 +12,7 @@ import com.caneryilmaz.apps.luckywheel.constant.RotationStatus
 import com.caneryilmaz.apps.luckywheel.data.WheelData
 import com.caneryilmaz.apps.luckywheel.ui.LuckyWheelView
 import kotlin.random.Random
+import androidx.core.graphics.toColorInt
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,25 +20,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnRotate: AppCompatButton
 
     private val backgroundColorList = arrayListOf(
-        Color.parseColor("#00FFFF"),
-        Color.parseColor("#00BCD4"),
-        Color.parseColor("#F44336"),
-        Color.parseColor("#9C27B0"),
-        Color.parseColor("#FF5722"),
-        Color.parseColor("#E91E63"),
-        Color.parseColor("#4CAF50"),
-        Color.parseColor("#FFC107")
+        "#00FFFF".toColorInt(),
+        "#00BCD4".toColorInt(),
+        "#F44336".toColorInt(),
+        "#9C27B0".toColorInt(),
+        "#FF5722".toColorInt(),
+        "#E91E63".toColorInt(),
+        "#4CAF50".toColorInt(),
+        "#FFC107".toColorInt()
     )
 
     private val textColorList = arrayListOf(
-        Color.parseColor("#000000"),
-        Color.parseColor("#FFFFFF"),
-        Color.parseColor("#FF0000"),
-        Color.parseColor("#00FF00"),
-        Color.parseColor("#0000FF"),
-        Color.parseColor("#00FFFF"),
-        Color.parseColor("#FF00FF"),
-        Color.parseColor("#FFFF00"),
+        "#000000".toColorInt(),
+        "#FFFFFF".toColorInt(),
+        "#FF0000".toColorInt(),
+        "#00FF00".toColorInt(),
+        "#0000FF".toColorInt(),
+        "#00FFFF".toColorInt(),
+        "#FF00FF".toColorInt(),
+        "#FFFF00".toColorInt(),
     )
 
 
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                 backgroundColor = intArrayOf(
                     backgroundColorList[Random.nextInt(8)],
                 ),
-                icon = BitmapFactory.decodeResource(resources,R.drawable.star_32dp),
+                icon = BitmapFactory.decodeResource(resources,R.drawable.favorite_24dp),
             )
             dummyWheelData.add(item)
         }

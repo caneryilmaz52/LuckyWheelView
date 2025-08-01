@@ -28,6 +28,7 @@ import kotlin.math.min
 import kotlin.math.sin
 import kotlin.random.Random
 import androidx.core.graphics.withSave
+import androidx.core.graphics.withTranslation
 
 
 internal class WheelView @JvmOverloads constructor(
@@ -667,11 +668,7 @@ internal class WheelView @JvmOverloads constructor(
 
             canvas.drawArc(itemArc, startAngle, sweepAngle, true, wheelItemBackgroundPaint)
 
-            val itemTextTypeface = if (item.textFontTypeface == null) {
-                itemTextFont
-            } else {
-                item.textFontTypeface
-            }
+            val itemTextTypeface = item.textFontTypeface ?: itemTextFont
 
             val adjustedRadius = (wheelRadius - wheelItemTextPaint.textSize - textPadding)
 
@@ -794,20 +791,24 @@ internal class WheelView @JvmOverloads constructor(
 
             item.icon?.let { icon ->
                 val imgWidth: Int = (resources.getDimensionPixelSize(R.dimen.dp36) * iconSizeMultiplier).toInt()
-                val angle = sweepAngle * wheelData.indexOf(item) + sweepAngle / 2
+                val angle = sweepAngle * wheelData.indexOf(item).toFloat() + sweepAngle / 2
                 val radians = Math.toRadians(angle.toDouble())
 
                 val sliceCenterX = (centerOfWheel + (wheelRadius * iconPositionFraction) * cos(radians)).toFloat()
                 val sliceCenterY = (centerOfWheel + (wheelRadius * iconPositionFraction) * sin(radians)).toFloat()
 
-                val rect = Rect(
-                    (sliceCenterX - imgWidth / 2).toInt(),
-                    (sliceCenterY - imgWidth / 2).toInt(),
-                    (sliceCenterX + imgWidth / 2).toInt(),
-                    (sliceCenterY + imgWidth / 2).toInt()
-                )
+                canvas.withTranslation(sliceCenterX, sliceCenterY) {
+                    rotate(angle + 90F)
 
-                canvas.drawBitmap(icon, null, rect, null)
+                    val rect = Rect(
+                        -imgWidth / 2,
+                        -imgWidth / 2,
+                        imgWidth / 2,
+                        imgWidth / 2
+                    )
+
+                    drawBitmap(icon, null, rect, null)
+                }
             }
 
             startAngle += sweepAngle
