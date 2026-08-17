@@ -23,7 +23,6 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#examples">Examples</a></li>
     <li><a href="#customization">Customization</a></li>
-    <li><a href="#support">Support</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -575,19 +574,6 @@ Get the perfect look with customization combinations.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- Support -->
-
-## Support
-
-Having amazing people like you behind me is a huge motivation to keep pushing forward and improving
-my work. 💪
-
-If you like the work that I do, you can help and support me by buying a cup of coffee. ☕️
-
-[!["Buy Me A Coffee"][buy-me-a-coffee-shield]][buy-me-a-coffee-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 <!-- CONTRIBUTING -->
 
@@ -669,7 +655,3 @@ Distributed under the [Apache 2.0 License](LICENSE). See `LICENSE.txt` for more 
 [android-weekly-shield]: https://androidweekly.net/issues/issue-629/badge
 
 [android-weekly-url]: https://androidweekly.net/issues/issue-629
-
-[buy-me-a-coffee-shield]: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
-
-[buy-me-a-coffee-url]: https://www.buymeacoffee.com/caneryilmaz
